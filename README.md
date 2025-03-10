@@ -3,34 +3,34 @@
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-Un outil de web crawling puissant qui s'intègre avec les assistants IA via le protocole MCP (Machine Conversation Protocol). Ce projet permet de crawler des sites web et d'enregistrer leur contenu sous forme de fichiers Markdown structurés.
+A powerful web crawling tool that integrates with AI assistants via the MCP (Machine Conversation Protocol). This project allows you to crawl websites and save their content [...]
 
-## 📋 Fonctionnalités
+## 📋 Features
 
-- Crawling de sites web avec profondeur configurable
-- Support des liens internes et externes
-- Génération de fichiers Markdown structurés
-- Intégration native avec les assistants IA via MCP
-- Statistiques détaillées des résultats de crawl
-- Gestion des erreurs et des pages non trouvées
+- Website crawling with configurable depth
+- Support for internal and external links
+- Generation of structured Markdown files
+- Native integration with AI assistants via MCP
+- Detailed crawl result statistics
+- Error and not found page handling
 
 ## 🚀 Installation
 
-### Prérequis
+### Prerequisites
 
-- Python 3.13 ou supérieur
-- pip (gestionnaire de packages Python)
+- Python 3.13 or higher
+- pip (Python package manager)
 
-### Étapes d'installation
+### Installation Steps
 
-1. Clonez ce dépôt :
+1. Clone this repository:
 
 ```bash
 git clone laurentvv/crawl4ai-mcp
 cd crawl4ai-mcp
 ```
 
-2. Créez un environnement virtuel et activez-le :
+2. Create and activate a virtual environment:
 
 ```bash
 # Windows
@@ -42,7 +42,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-3. Installez les dépendances requises :
+3. Install the required dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -50,17 +50,17 @@ pip install -r requirements.txt
 
 ## 🔧 Configuration
 
-### Configuration MCP pour les assistants IA
+### MCP Configuration for AI Assistants
 
-Pour utiliser ce crawler avec des assistants IA comme VScode Cline, configurez votre fichier `cline_mcp_settings.json` :
+To use this crawler with AI assistants like VScode Cline, configure your `cline_mcp_settings.json` file:
 
 ```json
 {
   "mcpServers": {
     "crawl": {
-      "command": "CHEMIN\\VERS\\VOTRE\\ENVIRONNEMENT\\.venv\\Scripts\\python.exe",
+      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
       "args": [
-        "CHEMIN\\VERS\\VOTRE\\PROJET\\crawl_mcp.py"
+        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -70,9 +70,9 @@ Pour utiliser ce crawler avec des assistants IA comme VScode Cline, configurez v
 }
 ```
 
-Remplacez `CHEMIN\\VERS\\VOTRE\\ENVIRONNEMENT` et `CHEMIN\\VERS\\VOTRE\\PROJET` par les chemins appropriés sur votre système.
+Replace `PATH\\TO\\YOUR\\ENVIRONMENT` and `PATH\\TO\\YOUR\\PROJECT` with the appropriate paths on your system.
 
-#### Exemple concret (Windows)
+#### Concrete Example (Windows)
 
 ```json
 {
@@ -90,59 +90,59 @@ Remplacez `CHEMIN\\VERS\\VOTRE\\ENVIRONNEMENT` et `CHEMIN\\VERS\\VOTRE\\PROJET` 
 }
 ```
 
-## 🖥️ Utilisation
+## 🖥️ Usage
 
-### Utilisation avec un assistant IA (via MCP)
+### Usage with an AI Assistant (via MCP)
 
-Une fois configuré dans votre assistant IA, vous pouvez utiliser le crawler en demandant à l'assistant d'effectuer un crawl avec la syntaxe suivante :
+Once configured in your AI assistant, you can use the crawler by asking the assistant to perform a crawl using the following syntax:
 
 ```
-Pouvez-vous crawler le site web https://exemple.com avec une profondeur de 2 ?
+Can you crawl the website https://example.com with a depth of 2?
 ```
 
-L'assistant utilisera le protocole MCP pour exécuter l'outil de crawling avec les paramètres spécifiés.
+The assistant will use the MCP protocol to run the crawling tool with the specified parameters.
 
-### Exemples d'utilisation avec Claude
+### Usage Examples with Claude
 
-Voici des exemples de requêtes que vous pouvez faire à Claude après avoir configuré l'outil MCP :
+Here are examples of requests you can make to Claude after configuring the MCP tool:
 
-- **Crawl simple** : "Peux-tu crawler le site example.com et m'en donner un résumé ?"
-- **Crawl avec options** : "Peux-tu crawler https://example.com avec une profondeur de 3 et en incluant les liens externes ?"
-- **Crawl avec sortie personnalisée** : "Peux-tu crawler le blog example.com et enregistrer les résultats dans un fichier nommé 'analyse_blog.md' ?"
+- **Simple Crawl**: "Can you crawl the site example.com and give me a summary?"
+- **Crawl with Options**: "Can you crawl https://example.com with a depth of 3 and include external links?"
+- **Crawl with Custom Output**: "Can you crawl the blog example.com and save the results in a file named 'blog_analysis.md'?"
 
-## 📁 Structure des résultats
+## 📁 Result Structure
 
-Les résultats du crawl sont enregistrés dans le dossier `crawl_results` à la racine du projet. Chaque fichier de résultat est au format Markdown avec la structure suivante :
+Crawl results are saved in the `crawl_results` folder at the root of the project. Each result file is in Markdown format with the following structure:
 
 ```markdown
 # https://example.com/page
 
-## Métadonnées
-- Profondeur : 1
-- Horodatage : 2023-07-01T12:34:56
+## Metadata
+- Depth: 1
+- Timestamp: 2023-07-01T12:34:56
 
-## Contenu
-Contenu extrait de la page...
+## Content
+Extracted content from the page...
 
 ---
 ```
 
-## 🛠️ Paramètres disponibles
+## 🛠️ Available Parameters
 
-L'outil de crawl accepte les paramètres suivants :
+The crawl tool accepts the following parameters:
 
-| Paramètre | Type | Description | Valeur par défaut |
-|-----------|------|-------------|-------------------|
-| url | string | URL à crawler (obligatoire) | - |
-| max_depth | integer | Profondeur maximale de crawling | 2 |
-| include_external | boolean | Inclure les liens externes | false |
-| verbose | boolean | Activer les sorties détaillées | true |
-| output_file | string | Chemin du fichier de sortie | généré automatiquement |
+| Parameter | Type | Description | Default Value |
+|-----------|------|-------------|---------------|
+| url | string | URL to crawl (required) | - |
+| max_depth | integer | Maximum crawling depth | 2 |
+| include_external | boolean | Include external links | false |
+| verbose | boolean | Enable detailed output | true |
+| output_file | string | Output file path | automatically generated |
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-## 📄 Licence
+## 📄 License
 
-Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
+This project is licensed under the MIT License - see the LICENSE file for details.
