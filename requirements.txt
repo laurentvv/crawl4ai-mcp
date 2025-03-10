@@ -1,0 +1,17 @@
+# Dépendances MCP
+mcp>=0.3.0
+anyio>=3.7.1
+click>=8.1.7
+
+# Serveur web pour le mode SSE (utilisé conditionnellement)
+starlette>=0.28.0
+uvicorn>=0.23.2
+
+# Dépendances pour le crawler
+crawl4ai>=0.5.0
+
+# Note: Les packages suivants sont des dépendances indirectes,
+# mais sont inclus explicitement pour assurer leur compatibilité
+httpx>=0.24.1  # utilisé par mcp
+lxml>=4.9.3   # utilisé par crawl4ai pour LXMLWebScrapingStrategy
+playwright>=1.41.0  # utilisé par crawl4ai
