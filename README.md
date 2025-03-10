@@ -26,8 +26,8 @@ Un outil de web crawling puissant qui s'intègre avec les assistants IA via le p
 1. Clonez ce dépôt :
 
 ```bash
-git clone <votre-repo-url>
-cd mcp_test
+git clone laurentvv/crawl4ai-mcp
+cd crawl4ai-mcp
 ```
 
 2. Créez un environnement virtuel et activez-le :
