@@ -15,72 +15,95 @@ from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 from crawl4ai.content_scraping_strategy import LXMLWebScrapingStrategy
 from crawl4ai.deep_crawling import BFSDeepCrawlStrategy
 
-# Configurer l'encodage UTF-8 pour toutes les sorties - Ce code reste utile
-# Particulièrement sur Windows où l'encodage par défaut peut ne pas être UTF-8
-# et pour garantir la cohérence du traitement des caractères internationaux
-# lors du crawling de sites web multilingues
+# Configure UTF-8 encoding for all outputs - This code remains useful
+# Particularly on Windows where the default encoding may not be UTF-8
+# and to ensure consistency in handling international characters
+# when crawling multilingual websites
 os.environ["PYTHONIOENCODING"] = "utf-8"
-# Forcer l'utilisation de UTF-8 pour stdout/stderr
+# Force UTF-8 usage for stdout/stderr
 if sys.stdout.encoding != "utf-8":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 if sys.stderr.encoding != "utf-8":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
-# Fonction améliorée pour sanitiser les textes avec remplacement explicite des caractères problématiques
+# Improved function to sanitize texts with explicit replacement of problematic characters
 def sanitize_text(text):
+    """
+    Sanitize the input text by replacing known problematic characters with their
+    ASCII equivalents and removing any other non-ASCII characters.
+    Args:
+        text (str): The input text to be sanitized. If None, an empty string is returned.
+    Returns:
+        str: The sanitized text with problematic characters replaced and non-ASCII
+             characters removed.
+    Replacements:
+        - Right arrow (→) becomes "->"
+        - Left arrow (←) becomes "<-"
+        - Up arrow (↑) becomes "^"
+        - Down arrow (↓) becomes "v"
+        - Bullet (•) becomes "*"
+        - En dash (–) becomes "-"
+        - Em dash (—) becomes "--"
+        - Left single quotation mark (‘) becomes "'"
+        - Right single quotation mark (’) becomes "'"
+        - Left double quotation mark (“) becomes '"'
+        - Right double quotation mark (”) becomes '"'
+        - Ellipsis (…) becomes "..."
+        - Non-breaking space ( ) becomes a normal space
+    """
     if text is None:
         return ""
     if not isinstance(text, str):
         text = str(text)
 
-    # Liste des remplacements explicites pour les caractères problématiques connus
+    # List of explicit replacements for known problematic characters
     replacements = {
-        "\u2192": "->",  # Flèche droite → devient ->
-        "\u2190": "<-",  # Flèche gauche ← devient <-
-        "\u2191": "^",  # Flèche haut ↑ devient ^
-        "\u2193": "v",  # Flèche bas ↓ devient v
-        "\u2022": "*",  # Puce • devient *
-        "\u2013": "-",  # Tiret moyen – devient -
-        "\u2014": "--",  # Tiret cadratin — devient --
-        "\u2018": "'",  # Guillemet-apostrophe gauche ' devient '
-        "\u2019": "'",  # Guillemet-apostrophe droit ' devient '
-        "\u201c": '"',  # Guillemet double gauche " devient "
-        "\u201d": '"',  # Guillemet double droit " devient "
-        "\u2026": "...",  # Points de suspension … devient ...
-        "\u00a0": " ",  # Espace insécable   devient espace normal
+        "\u2192": "->",  # Right arrow → becomes ->
+        "\u2190": "<-",  # Left arrow ← becomes <-
+        "\u2191": "^",   # Up arrow ↑ becomes ^
+        "\u2193": "v",   # Down arrow ↓ becomes v
+        "\u2022": "*",   # Bullet • becomes *
+        "\u2013": "-",   # En dash – becomes -
+        "\u2014": "--",  # Em dash — becomes --
+        "\u2018": "'",   # Left single quotation mark ' becomes '
+        "\u2019": "'",   # Right single quotation mark ' becomes '
+        "\u201c": '"',   # Left double quotation mark " becomes "
+        "\u201d": '"',   # Right double quotation mark " becomes "
+        "\u2026": "...", # Ellipsis … becomes ...
+        "\u00a0": " ",   # Non-breaking space   becomes normal space
     }
 
-    # Appliquer les remplacements explicites
+    # Apply explicit replacements
     for char, replacement in replacements.items():
         text = text.replace(char, replacement)
 
-    # Éliminer tous les autres caractères non-ASCII qui pourraient causer des problèmes
+    # Eliminate all other non-ASCII characters that might cause problems
     text = re.sub(r"[^\x00-\x7F]+", " ", text)
 
     return text
 
 
 def generate_filename_from_url(url):
-    """Génère un nom de fichier valide à partir d'une URL"""
-    # Extraire le hostname et le chemin
+    """Generates a valid filename from a URL"""
+    # Extract hostname and path
     parsed_url = urllib.parse.urlparse(url)
     hostname = parsed_url.netloc.replace(".", "_")
 
-    # Ajouter un timestamp
+    # Add a timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # Créer le nom du fichier
+    # Create the filename
     return f"crawl_{hostname}_{timestamp}.md"
 
 
 def get_results_directory():
-    """Retourne le chemin du répertoire pour stocker les résultats"""
-    # Utiliser un dossier dans le projet plutôt que temp
+    """Returns the path to the directory for storing results"""
+    # Use a folder in the project instead of temp
     results_dir = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), "crawl_results"
     )
 
-    # Créer le dossier s'il n'existe pas
+    # Create the folder if it doesn't exist
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
@@ -95,31 +118,31 @@ async def crawl_website(
     output_file: str = None,
 ) -> dict:
     """
-    Crawl un site web et enregistre les résultats dans un fichier
+    Crawl a website and save the results to a file
 
     Args:
-        url: URL à crawler
-        max_depth: Profondeur maximale de crawl
-        include_external: Inclure les liens externes
-        verbose: Afficher des informations détaillées
-        output_file: Chemin du fichier de sortie (généré automatiquement si None)
+        url: URL to crawl
+        max_depth: Maximum crawl depth
+        include_external: Include external links
+        verbose: Display detailed information
+        output_file: Output file path (automatically generated if None)
 
     Returns:
-        Un dictionnaire contenant le chemin du fichier et des statistiques
+        A dictionary containing the file path and statistics
     """
-    # Générer un nom de fichier si non spécifié
+    # Generate a filename if not specified
     if not output_file:
-        # Utiliser le dossier du projet au lieu du dossier temporaire
+        # Use the project folder instead of the temporary folder
         output_file = os.path.join(
             get_results_directory(), generate_filename_from_url(url)
         )
 
     if verbose:
         print(
-            f"Crawling {url} (profondeur max: {max_depth}, inclure externes: {include_external})",
+            f"Crawling {url} (max depth: {max_depth}, include external: {include_external})",
             file=sys.stderr,
         )
-        print(f"Les résultats seront enregistrés dans: {output_file}", file=sys.stderr)
+        print(f"Results will be saved to: {output_file}", file=sys.stderr)
 
     config = CrawlerRunConfig(
         deep_crawl_strategy=BFSDeepCrawlStrategy(
@@ -135,20 +158,20 @@ async def crawl_website(
         "total_pages": 0,
         "successful_pages": 0,
         "failed_pages": 0,
-        "not_found_pages": 0,  # Pages 404
-        "forbidden_pages": 0,   # Nouvelle statistique pour les pages 403
+        "not_found_pages": 0,  # 404 pages
+        "forbidden_pages": 0,   # New statistic for 403 pages
         "start_time": datetime.now(),
     }
 
     try:
         async with AsyncWebCrawler(verbose=verbose) as crawler:
-            # Ajouter un hook pour suivre la progression
+            # Add a hook to track progress
             async def progress_callback(event_type, data):
                 if event_type == "page_visit_start":
                     stats["total_pages"] += 1
                     if verbose:
                         print(
-                            f"[{datetime.now().strftime('%H:%M:%S')}] Visite de: {data['url']} (page {stats['total_pages']})",
+                            f"[{datetime.now().strftime('%H:%M:%S')}] Visiting: {data['url']} (page {stats['total_pages']})",
                             file=sys.stderr,
                         )
                 elif event_type == "page_visit_complete":
@@ -159,17 +182,17 @@ async def crawl_website(
 
                     if verbose:
                         print(
-                            f"[{datetime.now().strftime('%H:%M:%S')}] Terminé: {data['url']} (succès: {stats['successful_pages']}, échecs: {stats['failed_pages']})",
+                            f"[{datetime.now().strftime('%H:%M:%S')}] Completed: {data['url']} (success: {stats['successful_pages']}, failed: {stats['failed_pages']})",
                             file=sys.stderr,
                         )
 
-            # Ajouter le callback à notre configuration
+            # Add the callback to our configuration
             config.progress_callback = progress_callback
 
             try:
                 if verbose:
                     print(
-                        f"Début du crawl à {datetime.now().strftime('%H:%M:%S')}",
+                        f"Starting crawl at {datetime.now().strftime('%H:%M:%S')}",
                         file=sys.stderr,
                     )
 
@@ -177,35 +200,35 @@ async def crawl_website(
 
                 if verbose:
                     print(
-                        f"Crawl terminé à {datetime.now().strftime('%H:%M:%S')} - {len(results)} pages traitées",
+                        f"Crawl completed at {datetime.now().strftime('%H:%M:%S')} - {len(results)} pages processed",
                         file=sys.stderr,
                     )
-                    print("Génération du fichier markdown...", file=sys.stderr)
+                    print("Generating markdown file...", file=sys.stderr)
 
-                # S'assurer que les statistiques sont cohérentes avec les résultats
-                # Compter le nombre de pages ayant du contenu comme réussies
-                stats["successful_pages"] = 0  # Réinitialiser pour compter correctement
-                stats["not_found_pages"] = 0  # Réinitialiser le compteur de pages 404
-                stats["forbidden_pages"] = 0  # Initialiser le compteur de pages 403
+                # Ensure that statistics are consistent with the results
+                # Count the number of pages with content as successful
+                stats["successful_pages"] = 0  # Reset to count correctly
+                stats["not_found_pages"] = 0  # Reset the 404 pages counter
+                stats["forbidden_pages"] = 0  # Initialize the 403 pages counter
 
                 for idx, result in enumerate(results):
                     try:
-                        # Détecter les pages 404
+                        # Detect 404 pages
                         if hasattr(result, "status_code") and result.status_code == 404:
                             stats["not_found_pages"] += 1
                             if verbose:
                                 print(
-                                    f"[{datetime.now().strftime('%H:%M:%S')}] Page non trouvée (404): {result.url}",
+                                    f"[{datetime.now().strftime('%H:%M:%S')}] Page not found (404): {result.url}",
                                     file=sys.stderr,
                                 )
                             continue
                             
-                        # Détecter les pages 403
+                        # Detect 403 pages
                         if hasattr(result, "status_code") and result.status_code == 403:
                             stats["forbidden_pages"] += 1
                             if verbose:
                                 print(
-                                    f"[{datetime.now().strftime('%H:%M:%S')}] Accès interdit (403): {result.url}",
+                                    f"[{datetime.now().strftime('%H:%M:%S')}] Access forbidden (403): {result.url}",
                                     file=sys.stderr,
                                 )
                             continue
@@ -214,22 +237,22 @@ async def crawl_website(
                             result, "text", None
                         )
 
-                        # Vérifier si le contenu ressemble à une page 404 (contient "404 Not Found")
+                        # Check if the content looks like a 404 page (contains "404 Not Found")
                         if text_for_output and "404 Not Found" in text_for_output:
                             stats["not_found_pages"] += 1
                             if verbose:
                                 print(
-                                    f"[{datetime.now().strftime('%H:%M:%S')}] Page non trouvée (contenu 404): {result.url}",
+                                    f"[{datetime.now().strftime('%H:%M:%S')}] Page not found (content 404): {result.url}",
                                     file=sys.stderr,
                                 )
                             continue
                             
-                        # Vérifier si le contenu ressemble à une page 403 (contient "403 Forbidden")
+                        # Check if the content looks like a 403 page (contains "403 Forbidden")
                         if text_for_output and "403 Forbidden" in text_for_output:
                             stats["forbidden_pages"] += 1
                             if verbose:
                                 print(
-                                    f"[{datetime.now().strftime('%H:%M:%S')}] Accès interdit (contenu 403): {result.url}",
+                                    f"[{datetime.now().strftime('%H:%M:%S')}] Access forbidden (content 403): {result.url}",
                                     file=sys.stderr,
                                 )
                             continue
@@ -237,10 +260,10 @@ async def crawl_website(
                         if not text_for_output:
                             continue
 
-                        # Incrémenter le compteur de pages réussies
+                        # Increment the successful pages counter
                         stats["successful_pages"] += 1
 
-                        # Sanitiser tous les éléments qui seront écrits
+                        # Sanitize all elements that will be written
                         safe_url = sanitize_text(result.url)
                         safe_depth = sanitize_text(
                             str(result.metadata.get("depth", "N/A"))
@@ -251,11 +274,11 @@ async def crawl_website(
                         md_content = f"""
 # {safe_url}
 
-## Métadonnées
-- Profondeur : {safe_depth}
-- Horodatage : {safe_timestamp}
+## Metadata
+- Depth: {safe_depth}
+- Timestamp: {safe_timestamp}
 
-## Contenu
+## Content
 {safe_content}
 
 ---
@@ -263,49 +286,49 @@ async def crawl_website(
                         result_markdown.write(md_content)
                     except Exception as e:
                         print(
-                            f"Erreur lors du traitement du résultat {idx}: {e}",
+                            f"Error processing result {idx}: {e}",
                             file=sys.stderr,
                         )
-                        # Logger le contenu problématique pour diagnostic
+                        # Log problematic content for diagnosis
                         if verbose:
                             print(
-                                f"Caractères problématiques possibles dans: {result.url}",
+                                f"Possible problematic characters in: {result.url}",
                                 file=sys.stderr,
                             )
             except Exception as e:
-                print(f"Erreur pendant l'exécution du crawling: {e}", file=sys.stderr)
+                print(f"Error during crawling execution: {e}", file=sys.stderr)
                 return {
-                    "error": f"Erreur de crawling: {str(e)}",
+                    "error": f"Crawling error: {str(e)}",
                     "file_path": None,
                     "stats": stats,
                 }
     except Exception as e:
-        print(f"Erreur lors de l'initialisation du crawler: {e}", file=sys.stderr)
+        print(f"Error initializing crawler: {e}", file=sys.stderr)
         return {
-            "error": f"Erreur d'initialisation: {str(e)}",
+            "error": f"Initialization error: {str(e)}",
             "file_path": None,
             "stats": stats,
         }
 
-    # Écrire le contenu dans le fichier spécifié
+    # Write content to the specified file
     try:
         content = result_markdown.getvalue()
 
         if verbose:
             print(
-                f"Écriture des résultats dans le fichier: {output_file}",
+                f"Writing results to file: {output_file}",
                 file=sys.stderr,
             )
 
-        # Créer le dossier parent si nécessaire
+        # Create parent directory if needed
         os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
 
-        # Sanitiser et écrire le contenu
+        # Sanitize and write content
         with open(output_file, "w", encoding="utf-8", errors="replace") as f:
             safe_content = sanitize_text(content)
             f.write(safe_content)
 
-        # Finaliser les stats
+        # Finalize stats
         stats["end_time"] = datetime.now()
         stats["duration_seconds"] = (
             stats["end_time"] - stats["start_time"]
@@ -313,22 +336,22 @@ async def crawl_website(
 
         if verbose:
             print(
-                f"Crawl terminé en {stats['duration_seconds']:.2f} secondes",
+                f"Crawl completed in {stats['duration_seconds']:.2f} seconds",
                 file=sys.stderr,
             )
             print(
-                f"Pages traitées: {stats['successful_pages']} réussies, {stats['failed_pages']} échouées, "
-                f"{stats['not_found_pages']} non trouvées (404), {stats['forbidden_pages']} accès interdits (403)",
+                f"Pages processed: {stats['successful_pages']} successful, {stats['failed_pages']} failed, "
+                f"{stats['not_found_pages']} not found (404), {stats['forbidden_pages']} access forbidden (403)",
                 file=sys.stderr,
             )
-            print(f"Résultats enregistrés dans: {output_file}", file=sys.stderr)
+            print(f"Results saved to: {output_file}", file.sys.stderr)
 
         return {"file_path": output_file, "stats": stats, "error": None}
     except Exception as e:
-        print(f"Erreur lors de l'écriture du fichier: {e}", file=sys.stderr)
+        print(f"Error writing file: {e}", file=sys.stderr)
         print(traceback.format_exc(), file=sys.stderr)
         return {
-            "error": f"Erreur d'écriture: {str(e)}",
+            "error": f"Writing error: {str(e)}",
             "file_path": None,
             "stats": stats,
         }
@@ -370,31 +393,31 @@ def main(port: int, transport: str) -> int:
 
             if result["error"]:
                 return [
-                    types.TextContent(type="text", text=f"Erreur: {result['error']}")
+                    types.TextContent(type="text", text=f"Error: {result['error']}")
                 ]
 
             file_path = result["file_path"]
             stats = result["stats"]
 
-            # Créer un message de résumé
+            # Create a summary message
             summary = f"""
-## Crawl terminé avec succès
+## Crawl completed successfully
 - URL: {arguments["url"]}
-- Fichier de résultat: {file_path}
-- Durée: {stats["duration_seconds"]:.2f} secondes
-- Pages traitées: {stats["successful_pages"]} réussies, {stats["failed_pages"]} échouées, 
-  {stats.get("not_found_pages", 0)} non trouvées (404), {stats.get("forbidden_pages", 0)} accès interdits (403)
+- Result file: {file_path}
+- Duration: {stats["duration_seconds"]:.2f} seconds
+- Pages processed: {stats["successful_pages"]} successful, {stats["failed_pages"]} failed, 
+  {stats.get("not_found_pages", 0)} not found (404), {stats.get("forbidden_pages", 0)} access forbidden (403)
 
-Vous pouvez consulter les résultats dans le fichier: {file_path}
-(Les résultats sont désormais stockés dans le dossier 'crawl_results' de votre projet)
+You can view the results in the file: {file_path}
+(Results are now stored in the 'crawl_results' folder of your project)
             """
 
             return [types.TextContent(type="text", text=summary)]
         except Exception as e:
-            print(f"Erreur dans crawl_tool: {e}", file=sys.stderr)
-            print(traceback.format_exc(), file=sys.stderr)
+            print(f"Error in crawl_tool: {e}", file=sys.stderr)
+            print(traceback.format_exc(), file.sys.stderr)
             return [
-                types.TextContent(type="text", text=f"Erreur: {sanitize_text(str(e))}")
+                types.TextContent(type="text", text=f"Error: {sanitize_text(str(e))}")
             ]
 
     @app.list_tools()
@@ -480,6 +503,6 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"Erreur principale: {e}", file=sys.stderr)
+        print(f"Main error: {e}", file=sys.stderr)
         print(traceback.format_exc(), file=sys.stderr)
         sys.exit(1)
