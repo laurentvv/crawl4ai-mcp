@@ -344,7 +344,7 @@ async def crawl_website(
                 f"{stats['not_found_pages']} not found (404), {stats['forbidden_pages']} access forbidden (403)",
                 file=sys.stderr,
             )
-            print(f"Results saved to: {output_file}", file.sys.stderr)
+            print(f"Results saved to: {output_file}", sys.stderr)
 
         return {"file_path": output_file, "stats": stats, "error": None}
     except Exception as e:
@@ -415,7 +415,7 @@ You can view the results in the file: {file_path}
             return [types.TextContent(type="text", text=summary)]
         except Exception as e:
             print(f"Error in crawl_tool: {e}", file=sys.stderr)
-            print(traceback.format_exc(), file.sys.stderr)
+            print(traceback.format_exc(), sys.stderr)
             return [
                 types.TextContent(type="text", text=f"Error: {sanitize_text(str(e))}")
             ]
