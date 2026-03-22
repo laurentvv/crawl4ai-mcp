@@ -64,7 +64,6 @@ uv sync
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -87,7 +86,6 @@ uv sync
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -144,6 +142,8 @@ MCP टूल कॉन्फ़िगर करने के बाद, आप 
 | max_depth | इंटीजर | अधिकतम क्रॉलिंग गहराई | 2 |
 | include_external | बूलियन | बाहरी लिंक शामिल करें | false |
 | verbose | बूलियन | विस्तृत आउटपुट सक्षम करें | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | स्ट्रिंग | आउटपुट फ़ाइल पथ | स्वचालित रूप से उत्पन्न |
 
 ## 📊 परिणाम प्रारूप

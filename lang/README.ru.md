@@ -64,7 +64,6 @@ uv sync
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -87,7 +86,6 @@ uv sync
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -144,6 +142,8 @@ uv sync
 | max_depth | целое число | Максимальная глубина сканирования | 2 |
 | include_external | логический | Включать внешние ссылки | false |
 | verbose | логический | Включить подробный вывод | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | строка | Путь выходного файла | автоматически генерируется |
 
 ## 📊 Формат результата

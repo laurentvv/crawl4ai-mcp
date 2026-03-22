@@ -64,7 +64,6 @@ VScode Cline এর মতো AI সহায়কদের সাথে এই
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -87,7 +86,6 @@ VScode Cline এর মতো AI সহায়কদের সাথে এই
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -144,6 +142,8 @@ MCP টুল কনফিগার করার পরে আপনি Claude �
 | max_depth | ইন্টিজার | সর্বাধিক ক্রলিং গভীরতা | 2 |
 | include_external | বুলিয়ান | বাহ্যিক লিঙ্ক অন্তর্ভুক্ত করুন | false |
 | verbose | বুলিয়ান | বিস্তারিত আউটপুট সক্ষম করুন | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | স্ট্রিং | আউটপুট ফাইল পাথ | স্বয়ংক্রিয়ভাবে তৈরি |
 
 ## 📊 ফলাফল ফরম্যাট

@@ -64,7 +64,6 @@ Para usar este rastreador com assistentes de IA como VScode Cline, configure seu
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -87,7 +86,6 @@ Substitua `PATH\\TO\\YOUR\\ENVIRONMENT` e `PATH\\TO\\YOUR\\PROJECT` pelos caminh
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -144,6 +142,8 @@ A ferramenta de rastreamento aceita os seguintes parâmetros:
 | max_depth | inteiro | Profundidade máxima de rastreamento | 2 |
 | include_external | booleano | Incluir links externos | false |
 | verbose | booleano | Ativar saída detalhada | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | string | Caminho do arquivo de saída | gerado automaticamente |
 
 ## 📊 Formato do Resultado
