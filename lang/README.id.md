@@ -35,18 +35,18 @@ cd crawl4ai-mcp
 
 ```bash
 # Windows
-python -m venv .venv
-.venv\Scripts\activate
+uv venv
+source .venv/bin/activate
 
 # Linux/MacOS
-python -m venv .venv
+uv venv
 source .venv/bin/activate
 ```
 
 3. Pasang dependensi yang diperlukan:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 Konfigurasi
@@ -59,8 +59,9 @@ Untuk menggunakan crawler ini dengan asisten AI seperti VScode Cline, konfiguras
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uv",
       "args": [
+        "run",
         "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
@@ -79,8 +80,9 @@ Ganti `PATH\\TO\\YOUR\\ENVIRONMENT` dan `PATH\\TO\\YOUR\\PROJECT` dengan jalur y
 {
   "mcpServers": {
     "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
+      "command": "uv",
       "args": [
+        "run",
         "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,

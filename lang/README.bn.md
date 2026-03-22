@@ -35,18 +35,18 @@ cd crawl4ai-mcp
 
 ```bash
 # Windows
-python -m venv .venv
-.venv\Scripts\activate
+uv venv
+source .venv/bin/activate
 
 # Linux/MacOS
-python -m venv .venv
+uv venv
 source .venv/bin/activate
 ```
 
 3. প্রয়োজনীয় নির্ভরতাগুলি ইনস্টল করুন:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 কনফিগারেশন
@@ -59,8 +59,9 @@ VScode Cline এর মতো AI সহায়কদের সাথে এই
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uv",
       "args": [
+        "run",
         "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
@@ -79,8 +80,9 @@ VScode Cline এর মতো AI সহায়কদের সাথে এই
 {
   "mcpServers": {
     "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
+      "command": "uv",
       "args": [
+        "run",
         "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,

@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-A powerful web crawling tool that integrates with AI assistants via the MCP (Machine Conversation Protocol). This project allows you to crawl websites and save their content [...]
+A powerful web crawling tool that integrates with AI assistants via the MCP (Machine Conversation Protocol). This project allows you to crawl websites and save their content.
 
 ## 📋 Features
 
@@ -20,33 +20,21 @@ A powerful web crawling tool that integrates with AI assistants via the MCP (Mac
 
 ### Prerequisites
 
-- Python 3.9 or higher
+- [uv](https://github.com/astral-sh/uv)
 
 ### Installation Steps
 
 1. Clone this repository:
 
 ```bash
-git clone laurentvv/crawl4ai-mcp
+git clone https://github.com/laurentvv/crawl4ai-mcp
 cd crawl4ai-mcp
 ```
 
-2. Create and activate a virtual environment:
+2. Install the required dependencies:
 
 ```bash
-# Windows
-python -m venv .venv
-.venv\Scripts\activate
-
-# Linux/MacOS
-python -m venv .venv
-source .venv/bin/activate
-```
-
-3. Install the required dependencies:
-
-```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 Configuration
@@ -59,9 +47,10 @@ To use this crawler with AI assistants like VScode Cline, configure your `cline_
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uv",
       "args": [
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
+        "run",
+        "PATH/TO/YOUR/PROJECT/crawl_mcp.py"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -71,25 +60,7 @@ To use this crawler with AI assistants like VScode Cline, configure your `cline_
 }
 ```
 
-Replace `PATH\\TO\\YOUR\\ENVIRONMENT` and `PATH\\TO\\YOUR\\PROJECT` with the appropriate paths on your system.
-
-#### Concrete Example (Windows)
-
-```json
-{
-  "mcpServers": {
-    "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
-      "args": [
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
-      ],
-      "disabled": false,
-      "autoApprove": [],
-      "timeout": 600
-    }
-  }
-}
-```
+Replace `PATH/TO/YOUR/PROJECT` with the appropriate path on your system.
 
 ## 🖥️ Usage
 

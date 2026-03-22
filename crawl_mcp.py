@@ -155,6 +155,7 @@ async def crawl_and_output_to_markdown(start_url: str,
     include_external: bool = False,
     verbose: bool = True,
     output_file: str = None,
+    wait_for_selector: str = None,
 ) -> dict:
     """
     Crawl a website and save the results to a file
@@ -174,6 +175,7 @@ async def crawl_and_output_to_markdown(start_url: str,
         # Use the project folder instead of the temporary folder
         output_file = os.path.join(get_results_directory(), generate_filename_from_url(start_url))
 
+    # Set basic configuration
     config = CrawlerRunConfig(
         deep_crawl_strategy=BFSDeepCrawlStrategy(
             max_depth=max_depth,
@@ -182,6 +184,9 @@ async def crawl_and_output_to_markdown(start_url: str,
         scraping_strategy=LXMLWebScrapingStrategy(),
         verbose=verbose,
     )
+
+    if wait_for_selector:
+        config.wait_for = wait_for_selector
 
     try:
         async with AsyncWebCrawler() as crawler:
@@ -293,6 +298,18 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
             print(f"Valid pages processed: {stats['successful_pages']}")
             print(f"Error pages (403/404) skipped: {stats['not_found_pages'] + stats['forbidden_pages']}")
         
+        # Extract links
+        links = {"internal": [], "external": []}
+        for result in results:
+            if hasattr(result, "links") and isinstance(result.links, dict):
+                for k in ["internal", "external"]:
+                    if k in result.links:
+                        for link in result.links[k]:
+                            # avoid duplicates based on href
+                            href = link.get('href')
+                            if href and not any(l.get('href') == href for l in links[k]):
+                                links[k].append(link)
+
         # Finalize statistics
         stats["end_time"] = datetime.now()
         stats["duration_seconds"] = (stats["end_time"] - stats["start_time"]).total_seconds()
@@ -300,6 +317,7 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
         return {
             "file_path": output_path,
             "stats": stats,
+            "links": links,
             "error": None
         }
     
@@ -336,6 +354,8 @@ def main(port: int, transport: str) -> int:
         include_external = arguments.get("include_external", False)
         verbose = arguments.get("verbose", True)
         output_file = arguments.get("output_file", None)
+        wait_for_selector = arguments.get("wait_for_selector", None)
+        return_content = arguments.get("return_content", True)
 
         try:
             result = await crawl_and_output_to_markdown(
@@ -344,6 +364,7 @@ def main(port: int, transport: str) -> int:
                 include_external=include_external,
                 verbose=verbose,
                 output_file=output_file,
+                wait_for_selector=wait_for_selector,
             )
 
             if result["error"]:
@@ -354,6 +375,33 @@ def main(port: int, transport: str) -> int:
             file_path = result["file_path"]
             stats = result["stats"]
 
+            links_summary = ""
+            if "links" in result:
+                internal_links = [l.get("href") for l in result["links"].get("internal", [])[:20]]
+                external_links = [l.get("href") for l in result["links"].get("external", [])[:20]]
+                if internal_links or external_links:
+                    links_summary = "\n## Extracted Links (Sample)"
+                    if internal_links:
+                        links_summary += "\n### Internal Links\n- " + "\n- ".join(internal_links)
+                    if external_links:
+                        links_summary += "\n### External Links\n- " + "\n- ".join(external_links)
+                    links_summary += "\n"
+
+            content_text = ""
+            if return_content and file_path:
+                try:
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        content_text = f.read()
+
+                    # Truncate content if it's too long to prevent context overflow (e.g. 50k chars max)
+                    max_chars = 50000
+                    if len(content_text) > max_chars:
+                        content_text = content_text[:max_chars] + "\n\n...[Content truncated due to length]..."
+
+                    content_text = f"\n\n## Extracted Content\n\n{content_text}"
+                except Exception as e:
+                    print(f"Failed to read content for return: {e}")
+
             # Create a summary message
             summary = f"""
 ## Crawl completed successfully
@@ -362,9 +410,10 @@ def main(port: int, transport: str) -> int:
 - Duration: {stats["duration_seconds"]:.2f} seconds
 - Pages processed: {stats["successful_pages"]} successful, {stats["failed_pages"]} failed, 
   {stats.get("not_found_pages", 0)} not found (404), {stats.get("forbidden_pages", 0)} access forbidden (403)
-
-You can view the results in the file: {file_path}
+{links_summary}
+You can view the full results in the file: {file_path}
 (Results are now stored in the 'crawl_results' folder of your project)
+{content_text}
             """
             return [types.TextContent(type="text", text=summary)]
         except Exception as e:
@@ -407,6 +456,16 @@ You can view the results in the file: {file_path}
                             "type": "string",
                             "description": "Path to output file (generated if not provided)",
                             "default": None,
+                        },
+                        "wait_for_selector": {
+                            "type": "string",
+                            "description": "CSS selector to wait for before extracting content. Useful for single-page applications.",
+                            "default": None,
+                        },
+                        "return_content": {
+                            "type": "boolean",
+                            "description": "Whether to return the extracted content directly in the MCP response",
+                            "default": True,
                         },
                     },
                 },
