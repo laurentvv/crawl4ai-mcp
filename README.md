@@ -47,10 +47,11 @@ To use this crawler with AI assistants like VScode Cline, configure your `cline_
 {
   "mcpServers": {
     "crawl": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
-        "PATH/TO/YOUR/PROJECT/crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],

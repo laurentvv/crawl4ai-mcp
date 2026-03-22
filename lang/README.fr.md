@@ -59,9 +59,11 @@ Pour utiliser ce crawler avec des assistants IA comme VScode Cline, configurez v
 {
   "mcpServers": {
     "crawl": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
         "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
@@ -80,9 +82,11 @@ Remplacez `PATH\\TO\\YOUR\\ENVIRONMENT` et `PATH\\TO\\YOUR\\PROJECT` par les che
 {
   "mcpServers": {
     "crawl": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
         "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,

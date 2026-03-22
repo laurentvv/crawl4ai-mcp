@@ -59,9 +59,11 @@ Untuk menggunakan crawler ini dengan asisten AI seperti VScode Cline, konfiguras
 {
   "mcpServers": {
     "crawl": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
         "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
@@ -80,9 +82,11 @@ Ganti `PATH\\TO\\YOUR\\ENVIRONMENT` dan `PATH\\TO\\YOUR\\PROJECT` dengan jalur y
 {
   "mcpServers": {
     "crawl": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
         "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,

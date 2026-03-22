@@ -59,9 +59,11 @@ Para usar este rastreador com assistentes de IA como VScode Cline, configure seu
 {
   "mcpServers": {
     "crawl": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
         "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
       ],
       "disabled": false,
@@ -80,9 +82,11 @@ Substitua `PATH\\TO\\YOUR\\ENVIRONMENT` e `PATH\\TO\\YOUR\\PROJECT` pelos caminh
 {
   "mcpServers": {
     "crawl": {
-      "command": "uv",
+      "command": "uvx",
       "args": [
-        "run",
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
         "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
       ],
       "disabled": false,
