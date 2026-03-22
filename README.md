@@ -2,46 +2,32 @@
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](lang/README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](lang/README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](lang/README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](lang/README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](lang/README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](lang/README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](lang/README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](lang/README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](lang/README.id.md)
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-A powerful web crawling tool that integrates with AI assistants via the MCP (Machine Conversation Protocol). This project allows you to crawl websites and save their content.
+A powerful web crawling tool that integrates with AI assistants via the MCP (Model Context Protocol). This project allows AI assistants to crawl websites, extract dynamic content, navigate through links, and save structured Markdown files directly.
 
 ## 📋 Features
 
-- Website crawling with configurable depth
-- Support for internal and external links
-- Generation of structured Markdown files
 - Native integration with AI assistants via MCP
+- Return scraped Markdown content directly to the AI
+- Extracts and surfaces internal/external links for AI navigation
+- Wait for dynamic CSS selectors before scraping (SPA support)
+- Website crawling with configurable depth
 - Detailed crawl result statistics
 - Error and not found page handling
 
-## 🚀 Installation
+## 🚀 MCP Configuration
+
+The simplest and recommended way to use this tool is via `uvx`, which automatically fetches and runs the latest version from GitHub without requiring you to clone the repository manually.
 
 ### Prerequisites
 
-- [uv](https://github.com/astral-sh/uv)
+- [uv](https://github.com/astral-sh/uv) installed on your system.
 
-### Installation Steps
+### Setup for AI Assistants (e.g., Claude Desktop, Cline)
 
-1. Clone this repository:
-
-```bash
-git clone https://github.com/laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
-```
-
-2. Install the required dependencies:
-
-```bash
-uv sync
-```
-
-## 🔧 Configuration
-
-### MCP Configuration for AI Assistants
-
-To use this crawler with AI assistants like VScode Cline, configure your `cline_mcp_settings.json` file:
+Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mcp_settings.json` or `claude_desktop_config.json`):
 
 ```json
 {
@@ -61,66 +47,49 @@ To use this crawler with AI assistants like VScode Cline, configure your `cline_
 }
 ```
 
-Replace `PATH/TO/YOUR/PROJECT` with the appropriate path on your system.
-
 ## 🖥️ Usage
 
-### Usage with an AI Assistant (via MCP)
+Once configured, you can use the crawler by asking your AI assistant to perform a crawl.
 
-Once configured in your AI assistant, you can use the crawler by asking the assistant to perform a crawl using the following syntax:
-
-```
-Can you crawl the website https://example.com with a depth of 2?
-```
-
-The assistant will use the MCP protocol to run the crawling tool with the specified parameters.
-
-### Usage Examples with Claude
-
-Here are examples of requests you can make to Claude after configuring the MCP tool:
+### Usage Examples with Claude/Cline
 
 - **Simple Crawl**: "Can you crawl the site example.com and give me a summary?"
 - **Crawl with Options**: "Can you crawl https://example.com with a depth of 3 and include external links?"
-- **Crawl with Custom Output**: "Can you crawl the blog example.com and save the results in a file named 'blog_analysis.md'?"
+- **Dynamic Content**: "Crawl this React app and wait for the `.main-content` selector to load."
 
-## 📁 Result Structure
+## 🛠️ Available Parameters (MCP Tool)
 
-Crawl results are saved in the `crawl_results` folder at the root of the project. Each result file is in Markdown format with the following structure:
-
-```markdown
-# https://example.com/page
-
-## Metadata
-- Depth: 1
-- Timestamp: 2023-07-01T12:34:56
-
-## Content
-Extracted content from the page...
-
----
-```
-
-## 🛠️ Available Parameters
-
-The crawl tool accepts the following parameters:
+The `crawl` tool accepts the following parameters:
 
 | Parameter | Type | Description | Default Value |
 |-----------|------|-------------|---------------|
-| url | string | URL to crawl (required) | - |
-| max_depth | integer | Maximum crawling depth | 2 |
-| include_external | boolean | Include external links | false |
-| verbose | boolean | Enable detailed output | true |
-| output_file | string | Output file path | automatically generated |
+| `url` | string | URL to crawl (required) | - |
+| `max_depth` | integer | Maximum crawling depth | 2 |
+| `include_external` | boolean | Include external links | false |
+| `verbose` | boolean | Enable detailed output | true |
+| `wait_for_selector` | string | CSS selector to wait for before extracting content. Useful for single-page applications. | None |
+| `return_content` | boolean | Whether to return the extracted content directly in the MCP response (truncated to 50k chars if necessary). | true |
+| `output_file` | string | Output file path | automatically generated |
 
-## 📊 Result Format
+## 👨‍💻 Development
 
-The tool returns a summary with:
-- URL crawled
-- Path to the generated file
-- Duration of the crawl
-- Statistics about processed pages (successful, failed, not found, access forbidden)
+If you want to modify the crawler or run it locally:
 
-Results are saved in the `crawl_results` directory of your project.
+1. Clone this repository:
+```bash
+git clone https://github.com/laurentvv/crawl4ai-mcp
+cd crawl4ai-mcp
+```
+
+2. Install dependencies using `uv`:
+```bash
+uv sync
+```
+
+3. Run the MCP server directly:
+```bash
+uv run crawl4ai-mcp
+```
 
 ## 🤝 Contribution
 

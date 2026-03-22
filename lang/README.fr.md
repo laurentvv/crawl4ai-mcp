@@ -1,165 +1,100 @@
 # Web Crawler MCP
 
-[![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
+[![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](lang/README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](lang/README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](lang/README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](lang/README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](lang/README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](lang/README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](lang/README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](lang/README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](lang/README.id.md)
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-Un puissant outil de crawling web qui s'intègre avec des assistants IA via le MCP (Machine Conversation Protocol). Ce projet vous permet de crawler des sites web et de sauvegarder leur contenu [...]
+A powerful web crawling tool that integrates with AI assistants via the MCP (Model Context Protocol). This project allows AI assistants to crawl websites, extract dynamic content, navigate through links, and save structured Markdown files directly.
 
-## 📋 Fonctionnalités
+## 📋 Features
 
-- Crawling de sites web avec profondeur configurable
-- Support pour liens internes et externes
-- Génération de fichiers Markdown structurés
-- Intégration native avec les assistants IA via MCP
-- Statistiques détaillées des résultats de crawl
-- Gestion des erreurs et des pages non trouvées
+- Native integration with AI assistants via MCP
+- Return scraped Markdown content directly to the AI
+- Extracts and surfaces internal/external links for AI navigation
+- Wait for dynamic CSS selectors before scraping (SPA support)
+- Website crawling with configurable depth
+- Detailed crawl result statistics
+- Error and not found page handling
 
-## 🚀 Installation
+## 🚀 MCP Configuration
 
-### Prérequis
+The simplest and recommended way to use this tool is via `uvx`, which automatically fetches and runs the latest version from GitHub without requiring you to clone the repository manually.
 
-- Python 3.9 ou supérieur
+### Prerequisites
 
-### Étapes d'installation
+- [uv](https://github.com/astral-sh/uv) installed on your system.
 
-1. Cloner ce dépôt:
+### Setup for AI Assistants (e.g., Claude Desktop, Cline)
 
+Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mcp_settings.json` or `claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "crawl": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
+      ],
+      "disabled": false,
+      "autoApprove": [],
+      "timeout": 600
+    }
+  }
+}
+```
+
+## 🖥️ Usage
+
+Once configured, you can use the crawler by asking your AI assistant to perform a crawl.
+
+### Usage Examples with Claude/Cline
+
+- **Simple Crawl**: "Can you crawl the site example.com and give me a summary?"
+- **Crawl with Options**: "Can you crawl https://example.com with a depth of 3 and include external links?"
+- **Dynamic Content**: "Crawl this React app and wait for the `.main-content` selector to load."
+
+## 🛠️ Available Parameters (MCP Tool)
+
+The `crawl` tool accepts the following parameters:
+
+| Parameter | Type | Description | Default Value |
+|-----------|------|-------------|---------------|
+| `url` | string | URL to crawl (required) | - |
+| `max_depth` | integer | Maximum crawling depth | 2 |
+| `include_external` | boolean | Include external links | false |
+| `verbose` | boolean | Enable detailed output | true |
+| `wait_for_selector` | string | CSS selector to wait for before extracting content. Useful for single-page applications. | None |
+| `return_content` | boolean | Whether to return the extracted content directly in the MCP response (truncated to 50k chars if necessary). | true |
+| `output_file` | string | Output file path | automatically generated |
+
+## 👨‍💻 Development
+
+If you want to modify the crawler or run it locally:
+
+1. Clone this repository:
 ```bash
-git clone laurentvv/crawl4ai-mcp
+git clone https://github.com/laurentvv/crawl4ai-mcp
 cd crawl4ai-mcp
 ```
 
-2. Créer et activer un environnement virtuel:
-
-```bash
-# Windows
-uv venv
-source .venv/bin/activate
-
-# Linux/MacOS
-uv venv
-source .venv/bin/activate
-```
-
-3. Installer les dépendances requises:
-
+2. Install dependencies using `uv`:
 ```bash
 uv sync
 ```
 
-## 🔧 Configuration
-
-### Configuration MCP pour les Assistants IA
-
-Pour utiliser ce crawler avec des assistants IA comme VScode Cline, configurez votre fichier `cline_mcp_settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "crawl": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
-      ],
-      "disabled": false,
-      "autoApprove": [],
-      "timeout": 600
-    }
-  }
-}
+3. Run the MCP server directly:
+```bash
+uv run crawl4ai-mcp
 ```
-
-Remplacez `PATH\\TO\\YOUR\\ENVIRONMENT` et `PATH\\TO\\YOUR\\PROJECT` par les chemins appropriés sur votre système.
-
-#### Exemple concret (Windows)
-
-```json
-{
-  "mcpServers": {
-    "crawl": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
-      ],
-      "disabled": false,
-      "autoApprove": [],
-      "timeout": 600
-    }
-  }
-}
-```
-
-## 🖥️ Utilisation
-
-### Utilisation avec un Assistant IA (via MCP)
-
-Une fois configuré dans votre assistant IA, vous pouvez utiliser le crawler en demandant à l'assistant d'effectuer un crawl en utilisant la syntaxe suivante:
-
-```
-Pouvez-vous crawler le site web https://example.com avec une profondeur de 2?
-```
-
-L'assistant utilisera le protocole MCP pour exécuter l'outil de crawling avec les paramètres spécifiés.
-
-### Exemples d'utilisation avec Claude
-
-Voici des exemples de demandes que vous pouvez faire à Claude après avoir configuré l'outil MCP:
-
-- **Crawl simple**: "Pouvez-vous crawler le site example.com et me donner un résumé?"
-- **Crawl avec options**: "Pouvez-vous crawler https://example.com avec une profondeur de 3 et inclure les liens externes?"
-- **Crawl avec sortie personnalisée**: "Pouvez-vous crawler le blog example.com et sauvegarder les résultats dans un fichier nommé 'blog_analysis.md'?"
-
-## 📁 Structure des résultats
-
-Les résultats du crawl sont sauvegardés dans le dossier `crawl_results` à la racine du projet. Chaque fichier de résultat est au format Markdown avec la structure suivante:
-
-```markdown
-# https://example.com/page
-
-## Métadonnées
-- Profondeur: 1
-- Horodatage: 2023-07-01T12:34:56
-
-## Contenu
-Contenu extrait de la page...
-
----
-```
-
-## 🛠️ Paramètres disponibles
-
-L'outil de crawl accepte les paramètres suivants:
-
-| Paramètre | Type | Description | Valeur par défaut |
-|-----------|------|-------------|---------------|
-| url | chaîne | URL à crawler (requis) | - |
-| max_depth | entier | Profondeur maximale de crawling | 2 |
-| include_external | booléen | Inclure les liens externes | false |
-| verbose | booléen | Activer la sortie détaillée | true |
-| output_file | chaîne | Chemin du fichier de sortie | généré automatiquement |
-
-## 📊 Format des résultats
-
-L'outil renvoie un résumé avec:
-- URL crawlée
-- Chemin vers le fichier généré
-- Durée du crawl
-- Statistiques sur les pages traitées (réussies, échouées, non trouvées, accès interdit)
-
-Les résultats sont sauvegardés dans le répertoire `crawl_results` de votre projet.
 
 ## 🤝 Contribution
 
-Les contributions sont les bienvenues! N'hésitez pas à ouvrir une issue ou à soumettre une pull request.
+Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-## 📄 Licence
+## 📄 License
 
-Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.
+This project is licensed under the MIT License - see the LICENSE file for details.
