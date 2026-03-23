@@ -211,6 +211,82 @@ async def crawl_and_output_to_markdown(start_url: str,
             }
         }
 
+
+def _extract_page_content_and_errors(result) -> tuple[str | None, str | None]:
+    """
+    Extract text content from a result and check for common HTTP errors.
+    Returns a tuple of (content, error_type) where error_type is '404', '403', or 'missing'.
+    """
+    text_for_output = getattr(result, "markdown", None) or getattr(result, "text", None)
+    if not text_for_output:
+        return None, "missing"
+
+    # Check if it's an error page (404 or 403)
+    if ("404 Not Found" in text_for_output or "403 Forbidden" in text_for_output) and "nginx" in text_for_output:
+        error_type = "404" if "404 Not Found" in text_for_output else "403"
+        return text_for_output, error_type
+
+    # Check metadata title for error indicators
+    title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") else "Untitled page"
+    error_indicators = ["404", "403", "Not Found", "Forbidden"]
+    if any(indicator in title for indicator in error_indicators):
+        error_type = "404" if "404" in title or "Not Found" in title else "403"
+        # We still want to use the text but note it's an error
+        return text_for_output, error_type
+
+    return text_for_output, None
+
+def _format_markdown_page(result, text_for_output: str) -> str:
+    """
+    Format a single crawl result into a Markdown string.
+    """
+    # Remove links from Markdown text
+    clean_text = remove_links_from_markdown(text_for_output)
+
+    # Structuring metadata
+    metadata = {
+        "depth": result.metadata.get("depth", "N/A") if hasattr(result, "metadata") else "N/A",
+        "timestamp": datetime.now().isoformat(),
+        "title": result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") else "Untitled page",
+    }
+
+    # Formatted writing with literal template
+    return f"""
+# {metadata["title"]}
+
+## URL
+{result.url}
+
+## Metadata
+- Depth: {metadata["depth"]}
+- Timestamp: {metadata["timestamp"]}
+
+## Content
+{clean_text}
+
+---
+"""
+
+def _extract_unique_links(results: list) -> dict:
+    """
+    Extract and deduplicate internal and external links from crawl results.
+    """
+    links = {"internal": [], "external": []}
+    seen_hrefs = {"internal": set(), "external": set()}
+
+    for result in results:
+        if hasattr(result, "links") and isinstance(result.links, dict):
+            for k in ["internal", "external"]:
+                if k in result.links:
+                    for link in result.links[k]:
+                        # avoid duplicates based on href
+                        href = link.get('href')
+                        if href and href not in seen_hrefs[k]:
+                            links[k].append(link)
+                            seen_hrefs[k].add(href)
+
+    return links
+
 async def results_to_markdown(results: list, output_path: str) -> dict:
     """
     Convert crawl results to a markdown file
@@ -233,62 +309,29 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
     try:
         with open(output_path, "w", encoding="utf-8") as md_file:
             for result in results:
-                # Safe retrieval of content as in crawl copy.py
-                text_for_output = getattr(result, "markdown", None) or getattr(
-                    result, "text", None
-                )
+                text_for_output, error_type = _extract_page_content_and_errors(result)
 
-                if not text_for_output:
+                if error_type == "missing":
                     print(f"No content found for {result.url} - Skipped")
                     stats["failed_pages"] += 1
                     continue
+                elif error_type in ("404", "403"):
+                    # For title errors, original code prints slightly differently
+                    title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") else "Untitled page"
+                    error_indicators = ["404", "403", "Not Found", "Forbidden"]
                     
-                # Check if it's an error page (404 or 403)
-                if ("404 Not Found" in text_for_output or "403 Forbidden" in text_for_output) and "nginx" in text_for_output:
-                    error_type = "404" if "404 Not Found" in text_for_output else "403"
-                    print(f"{error_type} page detected and skipped: {result.url}")
+                    if any(indicator in title for indicator in error_indicators):
+                        print(f"Page with error title detected and skipped: {result.url}")
+                    else:
+                        print(f"{error_type} page detected and skipped: {result.url}")
+
                     if error_type == "404":
                         stats["not_found_pages"] += 1
                     else:
                         stats["forbidden_pages"] += 1
                     continue
 
-                # Remove links from Markdown text
-                text_for_output = remove_links_from_markdown(text_for_output)
-
-                # Structuring metadata
-                metadata = {
-                    "depth": result.metadata.get("depth", "N/A"),
-                    "timestamp": datetime.now().isoformat(),
-                    "title": result.metadata.get("title", "Untitled page"),
-                }
-                
-                # Check if title contains error indicators
-                error_indicators = ["404", "403", "Not Found", "Forbidden"]
-                if any(indicator in metadata["title"] for indicator in error_indicators):
-                    print(f"Page with error title detected and skipped: {result.url}")
-                    if "404" in metadata["title"] or "Not Found" in metadata["title"]:
-                        stats["not_found_pages"] += 1
-                    else:
-                        stats["forbidden_pages"] += 1
-                    continue
-
-                # Formatted writing with literal template
-                md_content = f"""
-# {metadata["title"]}
-
-## URL
-{result.url}
-
-## Metadata
-- Depth: {metadata["depth"]}
-- Timestamp: {metadata["timestamp"]}
-
-## Content
-{text_for_output}
-
----
-"""
+                md_content = _format_markdown_page(result, text_for_output)
                 md_file.write(md_content)
                 stats["successful_pages"] += 1
             
@@ -296,19 +339,7 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
             print(f"Valid pages processed: {stats['successful_pages']}")
             print(f"Error pages (403/404) skipped: {stats['not_found_pages'] + stats['forbidden_pages']}")
         
-        # Extract links
-        links = {"internal": [], "external": []}
-        seen_hrefs = {"internal": set(), "external": set()}
-        for result in results:
-            if hasattr(result, "links") and isinstance(result.links, dict):
-                for k in ["internal", "external"]:
-                    if k in result.links:
-                        for link in result.links[k]:
-                            # avoid duplicates based on href
-                            href = link.get('href')
-                            if href and href not in seen_hrefs[k]:
-                                links[k].append(link)
-                                seen_hrefs[k].add(href)
+        links = _extract_unique_links(results)
 
         # Finalize statistics
         stats["end_time"] = datetime.now()
