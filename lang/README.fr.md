@@ -1,33 +1,35 @@
 # Web Crawler MCP
 
-[![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](lang/README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](lang/README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](lang/README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](lang/README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](lang/README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](lang/README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](lang/README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](lang/README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](lang/README.id.md)
+[![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
 
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-A powerful web crawling tool that integrates with AI assistants via the MCP (Model Context Protocol). This project allows AI assistants to crawl websites, extract dynamic content, navigate through links, and save structured Markdown files directly.
+Un puissant outil de crawl Web qui s'intègre aux assistants IA via le MCP (Model Context Protocol). Ce projet permet aux assistants IA de parcourir des sites Web, d'extraire du contenu dynamique, de naviguer via des liens et d'enregistrer directement des fichiers Markdown structurés.
 
-## 📋 Features
+## 📋 Fonctionnalités
 
-- Native integration with AI assistants via MCP
-- Return scraped Markdown content directly to the AI
-- Extracts and surfaces internal/external links for AI navigation
-- Wait for dynamic CSS selectors before scraping (SPA support)
-- Website crawling with configurable depth
-- Detailed crawl result statistics
-- Error and not found page handling
+- Intégration native avec les assistants IA via MCP
+- Renvoie le contenu Markdown extrait directement à l'IA
+- Extrait et affiche les liens internes/externes pour la navigation de l'IA
+- Attend les sélecteurs CSS dynamiques avant l'extraction (support SPA)
+- Crawl de sites Web avec profondeur configurable
+- Statistiques détaillées des résultats du crawl
+- Gestion des erreurs et des pages non trouvées
 
-## 🚀 MCP Configuration
+## 🚀 Configuration MCP
 
-The simplest and recommended way to use this tool is via `uvx`, which automatically fetches and runs the latest version from GitHub without requiring you to clone the repository manually.
+Le moyen le plus simple et recommandé d'utiliser cet outil est via `uvx`, qui télécharge et exécute automatiquement la dernière version depuis GitHub sans vous obliger à cloner le dépôt manuellement.
 
-### Prerequisites
+### Prérequis
 
-- [uv](https://github.com/astral-sh/uv) installed on your system.
+- [uv](https://github.com/astral-sh/uv) installé sur votre système.
 
-### Setup for AI Assistants (e.g., Claude Desktop, Cline)
+### Configuration pour les assistants IA (ex: Claude Desktop, Cline)
 
-Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mcp_settings.json` or `claude_desktop_config.json`):
+Ajoutez ce qui suit au fichier de configuration MCP de votre assistant IA (ex: `cline_mcp_settings.json` ou `claude_desktop_config.json`) :
+
+> **Note pour les utilisateurs Windows** : Il est fortement recommandé de spécifier `--python 3.12` pour éviter les problèmes de compilation avec certaines dépendances.
 
 ```json
 {
@@ -35,6 +37,8 @@ Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mc
     "crawl": {
       "command": "uvx",
       "args": [
+        "--python",
+        "3.12",
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
@@ -47,54 +51,62 @@ Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mc
 }
 ```
 
-## 🖥️ Usage
+### Important : Installation du navigateur
 
-Once configured, you can use the crawler by asking your AI assistant to perform a crawl.
+Le crawler utilise Playwright pour gérer le contenu dynamique. Vous devez installer les navigateurs requis après avoir configuré l'outil :
 
-### Usage Examples with Claude/Cline
+```bash
+uv run playwright install chromium
+```
 
-- **Simple Crawl**: "Can you crawl the site example.com and give me a summary?"
-- **Crawl with Options**: "Can you crawl https://example.com with a depth of 3 and include external links?"
-- **Dynamic Content**: "Crawl this React app and wait for the `.main-content` selector to load."
+## 🖥️ Utilisation
 
-## 🛠️ Available Parameters (MCP Tool)
+Une fois configuré, vous pouvez utiliser le crawler en demandant à votre assistant IA d'effectuer un crawl.
 
-The `crawl` tool accepts the following parameters:
+### Exemples d'utilisation avec Claude/Cline
 
-| Parameter | Type | Description | Default Value |
-|-----------|------|-------------|---------------|
-| `url` | string | URL to crawl (required) | - |
-| `max_depth` | integer | Maximum crawling depth | 2 |
-| `include_external` | boolean | Include external links | false |
-| `verbose` | boolean | Enable detailed output | true |
-| `wait_for_selector` | string | CSS selector to wait for before extracting content. Useful for single-page applications. | None |
-| `return_content` | boolean | Whether to return the extracted content directly in the MCP response (truncated to 50k chars if necessary). | true |
-| `output_file` | string | Output file path | automatically generated |
+- **Crawl simple** : "Peux-tu crawler le site example.com et me donner un résumé ?"
+- **Crawl avec options** : "Peux-tu crawler https://example.com avec une profondeur de 3 et inclure les liens externes ?"
+- **Contenu dynamique** : "Crawle cette application React et attends que le sélecteur `.main-content` soit chargé."
 
-## 👨‍💻 Development
+## 🛠️ Paramètres disponibles (Outil MCP)
 
-If you want to modify the crawler or run it locally:
+L'outil `crawl` accepte les paramètres suivants :
 
-1. Clone this repository:
+| Paramètre | Type | Description | Valeur par défaut |
+|-----------|------|-------------|-------------------|
+| `url` | string | URL à crawler (requis) | - |
+| `max_depth` | integer | Profondeur maximale de crawl | 2 |
+| `include_external` | boolean | Inclure les liens externes | false |
+| `verbose` | boolean | Activer la sortie détaillée | true |
+| `wait_for_selector` | string | Sélecteur CSS à attendre avant d'extraire le contenu. Utile pour les applications monopages (SPA). | None |
+| `return_content` | boolean | S'il faut renvoyer le contenu extrait directement dans la réponse MCP (tronqué à 50k caractères si nécessaire). | true |
+| `output_file` | string | Chemin du fichier de sortie | généré automatiquement |
+
+## 👨‍💻 Développement
+
+Si vous souhaitez modifier le crawler ou l'exécuter localement :
+
+1. Clonez ce dépôt :
 ```bash
 git clone https://github.com/laurentvv/crawl4ai-mcp
 cd crawl4ai-mcp
 ```
 
-2. Install dependencies using `uv`:
+2. Installez les dépendances avec `uv` :
 ```bash
 uv sync
 ```
 
-3. Run the MCP server directly:
+3. Lancez le serveur MCP directement :
 ```bash
 uv run crawl4ai-mcp
 ```
 
 ## 🤝 Contribution
 
-Contributions are welcome! Feel free to open an issue or submit a pull request.
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir un ticket ou à soumettre une pull request.
 
-## 📄 License
+## 📄 Licence
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Ce projet est sous licence MIT - voir le fichier LICENSE pour plus de détails.

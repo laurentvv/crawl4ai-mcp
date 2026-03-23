@@ -2,58 +2,34 @@
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-一个通过 MCP（机器对话协议）与 AI 助手集成的强大网络爬虫工具。该项目允许您爬取网站并保存内容 [...]
+一个强大的网络爬虫工具，通过 MCP（模型上下文协议）与 AI 助手集成。该项目允许 AI 助手抓取网站、提取动态内容、通过链接导航并直接保存结构化的 Markdown 文件。
 
-## 📋 功能
+## 📋 功能特点
 
-- 可配置深度的网站爬取
-- 支持内部和外部链接
-- 生成结构化的 Markdown 文件
-- 通过 MCP 与 AI 助手原生集成
-- 详细的爬取结果统计
-- 错误和未找到页面处理
+- 通过 MCP 与 AI 助手进行原生集成
+- 直接向 AI 返回抓取的 Markdown 内容
+- 提取并显示内部/外部链接，供 AI 导航
+- 在抓取前等待动态 CSS 选择器（支持 SPA）
+- 可配置深度的网站抓取
+- 详细的抓取结果统计
+- 错误和页面未找到处理
 
-## 🚀 安装
+## 🚀 MCP 配置
+
+使用此工具最简单且推荐的方法是通过 `uvx`，它会自动从 GitHub 获取并运行最新版本，无需手动克隆仓库。
 
 ### 前提条件
 
-- Python 3.9 或更高版本
+- 系统中已安装 [uv](https://github.com/astral-sh/uv)。
 
-### 安装步骤
+### AI 助手设置（例如 Claude Desktop, Cline）
 
-1. 克隆此仓库：
+将以下内容添加到 AI 助手的 MCP 配置文件中（例如 `cline_mcp_settings.json` 或 `claude_desktop_config.json`）：
 
-```bash
-git clone laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
-```
-
-2. 创建并激活虚拟环境：
-
-```bash
-# Windows
-uv venv
-source .venv/bin/activate
-
-# Linux/MacOS
-uv venv
-source .venv/bin/activate
-```
-
-3. 安装所需依赖：
-
-```bash
-uv sync
-```
-
-## 🔧 配置
-
-### AI 助手的 MCP 配置
-
-要将此爬虫与 VScode Cline 等 AI 助手一起使用，请配置您的 `cline_mcp_settings.json` 文件：
+> **Windows 用户注意**：强烈建议指定 `--python 3.12`，以避免某些依赖项的编译问题。
 
 ```json
 {
@@ -61,6 +37,8 @@ uv sync
     "crawl": {
       "command": "uvx",
       "args": [
+        "--python",
+        "3.12",
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
@@ -73,93 +51,62 @@ uv sync
 }
 ```
 
-将 `PATH\\TO\\YOUR\\ENVIRONMENT` 和 `PATH\\TO\\YOUR\\PROJECT` 替换为您系统上的适当路径。
+### 重要提示：浏览器安装
 
-#### 具体示例 (Windows)
+该爬虫使用 Playwright 处理动态内容。设置工具后，您必须安装所需的浏览器：
 
-```json
-{
-  "mcpServers": {
-    "crawl": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
-      ],
-      "disabled": false,
-      "autoApprove": [],
-      "timeout": 600
-    }
-  }
-}
+```bash
+uv run playwright install chromium
 ```
 
 ## 🖥️ 使用方法
 
-### 通过 AI 助手使用（通过 MCP）
+配置完成后，您可以通过要求 AI 助手执行抓取来使用爬虫。
 
-在 AI 助手中配置完成后，您可以使用以下语法要求助手执行爬取：
+### Claude/Cline 使用示例
 
-```
-能否爬取网站 https://example.com，深度为 2？
-```
+- **简单抓取**：“你能抓取 example.com 网站并给我一个总结吗？”
+- **带选项的抓取**：“你能抓取 https://example.com，深度为 3 并包含外部链接吗？”
+- **动态内容**：“抓取这个 React 应用并等待 `.main-content` 选择器加载。”
 
-助手将使用 MCP 协议以指定参数运行爬虫工具。
+## 🛠️ 可用参数 (MCP 工具)
 
-### 与 Claude 一起使用的示例
-
-配置 MCP 工具后，您可以向 Claude 发出的请求示例：
-
-- **简单爬取**：「能否爬取网站 example.com 并给我总结？」
-- **带选项的爬取**：「能否以深度 3 爬取 https://example.com 并包含外部链接？」
-- **自定义输出的爬取**：「能否爬取博客 example.com 并将结果保存为'blog_analysis.md'？」
-
-## 📁 结果结构
-
-爬取结果保存在项目根目录的 `crawl_results` 文件夹中。每个结果文件都以 Markdown 格式保存，结构如下：
-
-```markdown
-# https://example.com/page
-
-## 元数据
-- 深度：1
-- 时间戳：2023-07-01T12:34:56
-
-## 内容
-从页面提取的内容...
-
----
-```
-
-## 🛠️ 可用参数
-
-爬虫工具接受以下参数：
+`crawl` 工具接受以下参数：
 
 | 参数 | 类型 | 描述 | 默认值 |
 |-----------|------|-------------|---------------|
-| url | 字符串 | 要爬取的 URL（必需） | - |
-| max_depth | 整数 | 最大爬取深度 | 2 |
-| include_external | 布尔值 | 包含外部链接 | false |
-| verbose | 布尔值 | 启用详细输出 | true |
-| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
-| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
-| output_file | 字符串 | 输出文件路径 | 自动生成 |
+| `url` | string | 要抓取的 URL（必填） | - |
+| `max_depth` | integer | 最大抓取深度 | 2 |
+| `include_external` | boolean | 包含外部链接 | false |
+| `verbose` | boolean | 启用详细输出 | true |
+| `wait_for_selector` | string | 提取内容前等待的 CSS 选择器。适用于单页面应用 (SPA)。 | None |
+| `return_content` | boolean | 是否直接在 MCP 响应中返回提取的内容（必要时截断至 50k 字符）。 | true |
+| `output_file` | string | 输出文件路径 | 自动生成 |
 
-## 📊 结果格式
+## 👨‍💻 开发
 
-工具返回包含以下内容的摘要：
-- 爬取的 URL
-- 生成文件的路径
-- 爬取持续时间
-- 处理页面的统计信息（成功、失败、未找到、访问被禁止）
+如果您想修改爬虫或在本地运行：
 
-结果保存在项目的 `crawl_results` 目录中。
+1. 克隆此仓库：
+```bash
+git clone https://github.com/laurentvv/crawl4ai-mcp
+cd crawl4ai-mcp
+```
+
+2. 使用 `uv` 安装依赖：
+```bash
+uv sync
+```
+
+3. 直接运行 MCP 服务器：
+```bash
+uv run crawl4ai-mcp
+```
 
 ## 🤝 贡献
 
-欢迎贡献！随时提出问题或提交拉取请求。
+欢迎贡献！请随时开启 issue 或提交 pull request。
 
 ## 📄 许可证
 
-该项目采用 MIT 许可证 - 详情请参阅 LICENSE 文件。
+该项目根据 MIT 许可证授权 - 详情请参阅 LICENSE 文件。

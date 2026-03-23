@@ -2,58 +2,34 @@
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-أداة قوية لزحف الويب تتكامل مع مساعدي الذكاء الاصطناعي عبر بروتوكول MCP (بروتوكول محادثة الآلة). يتيح لك هذا المشروع زحف مواقع الويب وحفظ محتواها [...]
+أداة قوية للزحف على الويب تتكامل مع مساعدي الذكاء الاصطناعي عبر بروتوكول سياق النموذج (MCP). يتيح هذا المشروع لمساعدي الذكاء الاصطناعي الزحف إلى المواقع الإلكترونية، واستخراج المحتوى الديناميكي، والتنقل عبر الروابط، وحفظ ملفات Markdown المنظمة مباشرة.
 
-## 📋 الميزات
+## 📋 المميزات
 
-- زحف مواقع الويب مع عمق قابل للتكوين
-- دعم للروابط الداخلية والخارجية
-- إنشاء ملفات ماركداون منظمة
 - تكامل أصلي مع مساعدي الذكاء الاصطناعي عبر MCP
+- إرجاع محتوى Markdown المستخرج مباشرة إلى الذكاء الاصطناعي
+- استخراج وعرض الروابط الداخلية/الخارجية للتنقل عبر الذكاء الاصطناعي
+- انتظار محددات CSS الديناميكية قبل الاستخراج (دعم SPA)
+- الزحف على المواقع الإلكترونية بعمق قابل للتهيئة
 - إحصائيات مفصلة لنتائج الزحف
-- معالجة الأخطاء والصفحات غير الموجودة
+- معالجة الأخطاء وصفحات "غير موجود"
 
-## 🚀 التثبيت
+## 🚀 تهيئة MCP
+
+الطريقة الأبسط والموصى بها لاستخدام هذه الأداة هي عبر `uvx` ، والتي تقوم تلقائيًا بجلب وتشغيل أحدث إصدار من GitHub دون مطالبتك باستنساخ المستودع يدويًا.
 
 ### المتطلبات الأساسية
 
-- بايثون 3.9 أو أعلى
+- تثبيت [uv](https://github.com/astral-sh/uv) على نظامك.
 
-### خطوات التثبيت
+### الإعداد لمساعدي الذكاء الاصطناعي (مثل Claude Desktop و Cline)
 
-1. استنساخ هذا المستودع:
+أضف ما يلي إلى ملف تهيئة MCP الخاص بمساعد الذكاء الاصطناعي (مثل `cline_mcp_settings.json` أو `claude_desktop_config.json`):
 
-```bash
-git clone laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
-```
-
-2. إنشاء وتفعيل بيئة افتراضية:
-
-```bash
-# Windows
-uv venv
-source .venv/bin/activate
-
-# Linux/MacOS
-uv venv
-source .venv/bin/activate
-```
-
-3. تثبيت التبعيات المطلوبة:
-
-```bash
-uv sync
-```
-
-## 🔧 التكوين
-
-### تكوين MCP لمساعدي الذكاء الاصطناعي
-
-لاستخدام هذا الزاحف مع مساعدي الذكاء الاصطناعي مثل VScode Cline، قم بتكوين ملف `cline_mcp_settings.json` الخاص بك:
+> **ملاحظة لمستخدمي ويندوز**: يوصى بشدة بتحديد `--python 3.12` لتجنب مشكلات الترجمة مع بعض التبعيات.
 
 ```json
 {
@@ -61,6 +37,8 @@ uv sync
     "crawl": {
       "command": "uvx",
       "args": [
+        "--python",
+        "3.12",
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
@@ -73,93 +51,62 @@ uv sync
 }
 ```
 
-استبدل `PATH\\TO\\YOUR\\ENVIRONMENT` و `PATH\\TO\\YOUR\\PROJECT` بالمسارات المناسبة على نظامك.
+### هام: تثبيت المتصفح
 
-#### مثال ملموس (Windows)
+يستخدم الزاحف Playwright للتعامل مع المحتوى الديناميكي. يجب عليك تثبيت المتصفحات المطلوبة بعد إعداد الأداة:
 
-```json
-{
-  "mcpServers": {
-    "crawl": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
-      ],
-      "disabled": false,
-      "autoApprove": [],
-      "timeout": 600
-    }
-  }
-}
+```bash
+uv run playwright install chromium
 ```
 
 ## 🖥️ الاستخدام
 
-### الاستخدام مع مساعد الذكاء الاصطناعي (عبر MCP)
+بمجرد التهيئة، يمكنك استخدام الزاحف من خلال مطالبة مساعد الذكاء الاصطناعي الخاص بك بإجراء عملية زحف.
 
-بمجرد التكوين في مساعد الذكاء الاصطناعي الخاص بك، يمكنك استخدام الزاحف عن طريق مطالبة المساعد بإجراء عملية زحف باستخدام الصيغة التالية:
+### أمثلة على الاستخدام مع Claude/Cline
 
-```
-هل يمكنك زحف موقع الويب https://example.com بعمق 2؟
-```
+- **زحف بسيط**: "هل يمكنك الزحف إلى موقع example.com وإعطائي ملخصًا؟"
+- **زحف مع خيارات**: "هل يمكنك الزحف إلى https://example.com بعمق 3 وتضمين الروابط الخارجية؟"
+- **المحتوى الديناميكي**: "قم بالزحف إلى تطبيق React هذا وانتظر تحميل محدد `.main-content`."
 
-سيستخدم المساعد بروتوكول MCP لتشغيل أداة الزحف بالمعلمات المحددة.
+## 🛠️ المعلمات المتاحة (أداة MCP)
 
-### أمثلة الاستخدام مع Claude
-
-فيما يلي أمثلة على الطلبات التي يمكنك تقديمها إلى Claude بعد تكوين أداة MCP:
-
-- **زحف بسيط**: "هل يمكنك زحف موقع example.com وإعطائي ملخصًا؟"
-- **زحف مع خيارات**: "هل يمكنك زحف https://example.com بعمق 3 وتضمين الروابط الخارجية؟"
-- **زحف مع مخرجات مخصصة**: "هل يمكنك زحف مدونة example.com وحفظ النتائج في ملف يسمى 'blog_analysis.md'؟"
-
-## 📁 هيكل النتائج
-
-يتم حفظ نتائج الزحف في مجلد `crawl_results` في جذر المشروع. كل ملف نتيجة بتنسيق ماركداون مع الهيكل التالي:
-
-```markdown
-# https://example.com/page
-
-## البيانات الوصفية
-- العمق: 1
-- الطابع الزمني: 2023-07-01T12:34:56
-
-## المحتوى
-المحتوى المستخرج من الصفحة...
-
----
-```
-
-## 🛠️ المعلمات المتاحة
-
-تقبل أداة الزحف المعلمات التالية:
+تقبل أداة `crawl` المعلمات التالية:
 
 | المعلمة | النوع | الوصف | القيمة الافتراضية |
 |-----------|------|-------------|---------------|
-| url | سلسلة | عنوان URL للزحف (مطلوب) | - |
-| max_depth | عدد صحيح | الحد الأقصى لعمق الزحف | 2 |
-| include_external | منطقي | تضمين الروابط الخارجية | false |
-| verbose | منطقي | تمكين المخرجات المفصلة | true |
-| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
-| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
-| output_file | سلسلة | مسار ملف المخرجات | يتم إنشاؤه تلقائيًا |
+| `url` | string | رابط URL للزحف إليه (مطلوب) | - |
+| `max_depth` | integer | أقصى عمق للزحف | 2 |
+| `include_external` | boolean | تضمين الروابط الخارجية | false |
+| `verbose` | boolean | تمكين المخرجات التفصيلية | true |
+| `wait_for_selector` | string | محدد CSS للانتظار قبل استخراج المحتوى. مفيد لتطبيقات الصفحة الواحدة (SPA). | None |
+| `return_content` | boolean | ما إذا كان سيتم إرجاع المحتوى المستخرج مباشرة في استجابة MCP (مقتطع إلى 50 ألف حرف إذا لزم الأمر). | true |
+| `output_file` | string | مسار ملف المخرجات | يتم إنشاؤه تلقائيًا |
 
-## 📊 تنسيق النتائج
+## 👨‍💻 التطوير
 
-تعيد الأداة ملخصًا يحتوي على:
-- عنوان URL الذي تم زحفه
-- المسار إلى الملف الناتج
-- مدة الزحف
-- إحصائيات حول الصفحات المعالجة (ناجحة، فاشلة، غير موجودة، ممنوع الوصول)
+إذا كنت ترغب في تعديل الزاحف أو تشغيله محليًا:
 
-يتم حفظ النتائج في دليل `crawl_results` لمشروعك.
+1. استنساخ هذا المستودع:
+```bash
+git clone https://github.com/laurentvv/crawl4ai-mcp
+cd crawl4ai-mcp
+```
+
+2. تثبيت التبعيات باستخدام `uv`:
+```bash
+uv sync
+```
+
+3. تشغيل خادم MCP مباشرة:
+```bash
+uv run crawl4ai-mcp
+```
 
 ## 🤝 المساهمة
 
-المساهمات مرحب بها! لا تتردد في فتح قضية أو تقديم طلب سحب.
+المساهمات مرحب بها! لا تتردد في فتح مشكلة (issue) أو تقديم طلب سحب (pull request).
 
 ## 📄 الترخيص
 
-هذا المشروع مرخص بموجب ترخيص MIT - راجع ملف LICENSE للتفاصيل.
+هذا المشروع مرخص بموجب رخصة MIT - راجع ملف LICENSE للحصول على التفاصيل.
