@@ -5,7 +5,6 @@ import sys
 import traceback
 from datetime import datetime
 
-import anyio
 import click
 import urllib.parse
 import mcp.types as types
@@ -331,80 +330,69 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
             "stats": stats
         }
 
-@click.command()
-@click.option("--port", default=8000, help="Port to listen on for SSE")
-@click.option(
-    "--transport",
-    type=click.Choice(["stdio", "sse"]),
-    default="stdio",
-    help="Transport type",
-)
-def main(port: int, transport: str) -> int:
-    app = Server("mcp-web-crawler")
+app = Server("mcp-web-crawler")
 
-    @app.call_tool()
-    async def crawl_tool(
-        name: str, arguments: dict
-    ) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
-        if name != "crawl":
-            raise ValueError(f"Unknown tool: {name}")
-        if "url" not in arguments:
-            raise ValueError("Missing required argument 'url'")
+@app.call_tool()
+async def crawl_tool(
+    name: str, arguments: dict
+) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
+    if name != "crawl":
+        raise ValueError(f"Unknown tool: {name}")
+    if "url" not in arguments:
+        raise ValueError("Missing required argument 'url'")
 
-        max_depth = arguments.get("max_depth", 2)
-        include_external = arguments.get("include_external", False)
-        verbose = arguments.get("verbose", True)
-        output_file = arguments.get("output_file", None)
-        wait_for_selector = arguments.get("wait_for_selector", None)
-        return_content = arguments.get("return_content", True)
+    max_depth = arguments.get("max_depth", 2)
+    include_external = arguments.get("include_external", False)
+    verbose = arguments.get("verbose", True)
+    output_file = arguments.get("output_file", None)
+    wait_for_selector = arguments.get("wait_for_selector", None)
+    return_content = arguments.get("return_content", True)
 
-        try:
-            result = await crawl_and_output_to_markdown(
-                arguments["url"],
-                max_depth=max_depth,
-                include_external=include_external,
-                verbose=verbose,
-                output_file=output_file,
-                wait_for_selector=wait_for_selector,
-            )
+    try:
+        result = await crawl_and_output_to_markdown(
+            arguments["url"],
+            max_depth=max_depth,
+            include_external=include_external,
+            verbose=verbose,
+            output_file=output_file,
+            wait_for_selector=wait_for_selector,
+        )
 
-            if result["error"]:
-                return [
-                    types.TextContent(type="text", text=f"Error: {result['error']}")
-                ]
+        if result["error"]:
+            return [
+                types.TextContent(type="text", text=f"Error: {result['error']}")
+            ]
 
-            file_path = result["file_path"]
-            stats = result["stats"]
+        file_path = result["file_path"]
+        stats = result["stats"]
 
-            links_summary = ""
-            if "links" in result:
-                internal_links = [l.get("href") for l in result["links"].get("internal", [])[:20]]
-                external_links = [l.get("href") for l in result["links"].get("external", [])[:20]]
-                if internal_links or external_links:
-                    links_summary = "\n## Extracted Links (Sample)"
-                    if internal_links:
-                        links_summary += "\n### Internal Links\n- " + "\n- ".join(internal_links)
-                    if external_links:
-                        links_summary += "\n### External Links\n- " + "\n- ".join(external_links)
-                    links_summary += "\n"
+        links_summary = ""
+        if "links" in result:
+            internal_links = [link.get("href") for link in result["links"].get("internal", [])[:20]]
+            external_links = [link.get("href") for link in result["links"].get("external", [])[:20]]
+            if internal_links or external_links:
+                links_summary = "\n## Extracted Links (Sample)"
+                if internal_links:
+                    links_summary += "\n### Internal Links\n- " + "\n- ".join(internal_links)
+                if external_links:
+                    links_summary += "\n### External Links\n- " + "\n- ".join(external_links)
+                links_summary += "\n"
 
-            content_text = ""
-            if return_content and file_path:
-                try:
-                    with open(file_path, "r", encoding="utf-8") as f:
-                        content_text = f.read()
+        content_text = ""
+        if return_content and file_path:
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    content_text = f.read()
 
-                    # Truncate content if it's too long to prevent context overflow (e.g. 50k chars max)
-                    max_chars = 50000
-                    if len(content_text) > max_chars:
-                        content_text = content_text[:max_chars] + "\n\n...[Content truncated due to length]..."
+                max_chars = 50000
+                if len(content_text) > max_chars:
+                    content_text = content_text[:max_chars] + "\n\n...[Content truncated due to length]..."
 
-                    content_text = f"\n\n## Extracted Content\n\n{content_text}"
-                except Exception as e:
-                    print(f"Failed to read content for return: {e}")
+                content_text = f"\n\n## Extracted Content\n\n{content_text}"
+            except Exception as e:
+                print(f"Failed to read content for return: {e}")
 
-            # Create a summary message
-            summary = f"""
+        summary = f"""
 ## Crawl completed successfully
 - URL: {arguments["url"]}
 - Result file: {file_path}
@@ -415,103 +403,116 @@ def main(port: int, transport: str) -> int:
 You can view the full results in the file: {file_path}
 (Results are now stored in the 'crawl_results' folder of your project)
 {content_text}
-            """
-            return [types.TextContent(type="text", text=summary)]
-        except Exception as e:
-            print(f"Error in crawl_tool: {e}", file=sys.stderr)
-            print(traceback.format_exc(), file=sys.stderr)
-            return [
-                types.TextContent(type="text", text=f"Error: {sanitize_text(str(e))}")
-            ]
-
-    @app.list_tools()
-    async def list_tools() -> list[types.Tool]:
+        """
+        return [types.TextContent(type="text", text=summary)]
+    except Exception as e:
+        print(f"Error in crawl_tool: {e}", file=sys.stderr)
+        print(traceback.format_exc(), file=sys.stderr)
         return [
-            types.Tool(
-                name="crawl",
-                description="Crawls a website and saves its content as structured markdown to a file",
-                inputSchema={
-                    "type": "object",
-                    "required": ["url"],
-                    "properties": {
-                        "url": {
-                            "type": "string",
-                            "description": "URL to crawl",
-                        },
-                        "max_depth": {
-                            "type": "integer",
-                            "description": "Maximum crawling depth",
-                            "default": 2,
-                        },
-                        "include_external": {
-                            "type": "boolean",
-                            "description": "Whether to include external links",
-                            "default": False,
-                        },
-                        "verbose": {
-                            "type": "boolean",
-                            "description": "Enable verbose output",
-                            "default": True,
-                        },
-                        "output_file": {
-                            "type": "string",
-                            "description": "Path to output file (generated if not provided)",
-                            "default": None,
-                        },
-                        "wait_for_selector": {
-                            "type": "string",
-                            "description": "CSS selector to wait for before extracting content. Useful for single-page applications.",
-                            "default": None,
-                        },
-                        "return_content": {
-                            "type": "boolean",
-                            "description": "Whether to return the extracted content directly in the MCP response",
-                            "default": True,
-                        },
-                    },
-                },
-            )
+            types.TextContent(type="text", text=f"Error: {sanitize_text(str(e))}")
         ]
 
-    if transport == "sse":
-        from mcp.server.sse import SseServerTransport
-        from starlette.applications import Starlette
-        from starlette.routing import Mount, Route
-
-        sse = SseServerTransport("/messages/")
-
-        async def handle_sse(request):
-            async with sse.connect_sse(
-                request.scope, request.receive, request.send
-            ) as streams:
-                await app.run(
-                    streams[0], streams[1], app.create_initialization_options()
-                )
-
-        starlette_app = Starlette(
-            debug=True,
-            routes=[
-                Route("/sse", endpoint=handle_sse),
-                Mount("/messages/", app=sse.handle_post_message),
-            ],
+@app.list_tools()
+async def list_tools() -> list[types.Tool]:
+    return [
+        types.Tool(
+            name="crawl",
+            description="Crawls a website and saves its content as structured markdown to a file",
+            inputSchema={
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "URL to crawl",
+                    },
+                    "max_depth": {
+                        "type": "integer",
+                        "description": "Maximum crawling depth",
+                        "default": 2,
+                    },
+                    "include_external": {
+                        "type": "boolean",
+                        "description": "Whether to include external links",
+                        "default": False,
+                    },
+                    "verbose": {
+                        "type": "boolean",
+                        "description": "Enable verbose output",
+                        "default": True,
+                    },
+                    "output_file": {
+                        "type": "string",
+                        "description": "Path to output file (generated if not provided)",
+                        "default": None,
+                    },
+                    "wait_for_selector": {
+                        "type": "string",
+                        "description": "CSS selector to wait for before extracting content. Useful for single-page applications.",
+                        "default": None,
+                    },
+                    "return_content": {
+                        "type": "boolean",
+                        "description": "Whether to return the extracted content directly in the MCP response",
+                        "default": True,
+                    },
+                },
+            },
         )
+    ]
 
-        import uvicorn
+def run_sse_server(app: Server, port: int):
+    from mcp.server.sse import SseServerTransport
+    from starlette.applications import Starlette
+    from starlette.routing import Mount, Route
+    import uvicorn
 
-        uvicorn.run(starlette_app, host="127.0.0.1", port=port)
+    sse = SseServerTransport("/messages/")
+
+    async def handle_sse(request):
+        async with sse.connect_sse(
+            request.scope, request.receive, request.send
+        ) as streams:
+            await app.run(
+                streams[0], streams[1], app.create_initialization_options()
+            )
+
+    starlette_app = Starlette(
+        debug=True,
+        routes=[
+            Route("/sse", endpoint=handle_sse),
+            Mount("/messages/", app=sse.handle_post_message),
+        ],
+    )
+
+    uvicorn.run(starlette_app, host="127.0.0.1", port=port)
+
+def run_stdio_server(app: Server):
+    from mcp.server.stdio import stdio_server
+    import anyio
+
+    async def arun():
+        async with stdio_server() as streams:
+            await app.run(
+                streams[0], streams[1], app.create_initialization_options()
+            )
+
+    anyio.run(arun)
+
+@click.command()
+@click.option("--port", default=8000, help="Port to listen on for SSE")
+@click.option(
+    "--transport",
+    type=click.Choice(["stdio", "sse"]),
+    default="stdio",
+    help="Transport type",
+)
+def main(port: int, transport: str) -> int:
+    if transport == "sse":
+        run_sse_server(app, port)
     else:
-        from mcp.server.stdio import stdio_server
-
-        async def arun():
-            async with stdio_server() as streams:
-                await app.run(
-                    streams[0], streams[1], app.create_initialization_options()
-                )
-
-        anyio.run(arun)
-
+        run_stdio_server(app)
     return 0
-
 
 if __name__ == "__main__":
     try:
