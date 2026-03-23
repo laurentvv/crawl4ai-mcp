@@ -2,7 +2,7 @@ from unittest.mock import patch
 import pytest
 import anyio
 import os
-from crawl4ai_mcp.__init__ import results_to_markdown
+from crawl4ai_mcp import results_to_markdown, _extract_page_content_and_errors
 
 class MockResult:
     def __init__(self, i, error_type=None):
@@ -85,3 +85,65 @@ async def test_results_to_markdown_exception():
 
         assert "error" in res
         assert res["error"] == "Writing error: Permission denied"
+
+
+def test_extract_page_content_and_errors_404_text_with_nginx():
+    class MockResultTextError:
+        markdown = "An error occurred: 404 Not Found nginx"
+        metadata = {"title": "Normal Title", "depth": 1}
+
+    result = MockResultTextError()
+    content, error_type = _extract_page_content_and_errors(result)
+    assert content == "An error occurred: 404 Not Found nginx"
+    assert error_type == "404"
+
+def test_extract_page_content_and_errors_403_text_with_nginx():
+    class MockResultTextError:
+        markdown = "An error occurred: 403 Forbidden nginx"
+        metadata = {"title": "Normal Title", "depth": 1}
+
+    result = MockResultTextError()
+    content, error_type = _extract_page_content_and_errors(result)
+    assert content == "An error occurred: 403 Forbidden nginx"
+    assert error_type == "403"
+
+def test_extract_page_content_and_errors_404_title():
+    class MockResultTitleError:
+        markdown = "Some normal looking content without the n word"
+        metadata = {"title": "Page 404 Not Found", "depth": 1}
+
+    result = MockResultTitleError()
+    content, error_type = _extract_page_content_and_errors(result)
+    assert content == "Some normal looking content without the n word"
+    assert error_type == "404"
+
+def test_extract_page_content_and_errors_403_title():
+    class MockResultTitleError:
+        markdown = "Some normal looking content"
+        metadata = {"title": "Access Forbidden Error", "depth": 1}
+
+    result = MockResultTitleError()
+    content, error_type = _extract_page_content_and_errors(result)
+    assert content == "Some normal looking content"
+    assert error_type == "403"
+
+def test_extract_page_content_and_errors_missing():
+    class MockResultMissing:
+        markdown = None
+        text = None
+        metadata = {"title": "Normal Title", "depth": 1}
+
+    result = MockResultMissing()
+    content, error_type = _extract_page_content_and_errors(result)
+    assert content is None
+    assert error_type == "missing"
+
+def test_extract_page_content_and_errors_normal():
+    class MockResultNormal:
+        markdown = "This is a great page"
+        metadata = {"title": "Great Page", "depth": 1}
+
+    result = MockResultNormal()
+    content, error_type = _extract_page_content_and_errors(result)
+    assert content == "This is a great page"
+    assert error_type is None
