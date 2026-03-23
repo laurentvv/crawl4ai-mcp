@@ -1,7 +1,6 @@
 import pytest
 import anyio
 import os
-import json
 from crawl4ai_mcp.__init__ import results_to_markdown
 
 class MockResult:
@@ -42,7 +41,7 @@ async def test_results_to_markdown_success():
 
         # Verify file contents
         assert os.path.exists(output_path)
-        async with await anyio.open_file(output_path, "r") as f:
+        async with await anyio.Path(output_path).open("r") as f:
             content = await f.read()
             assert "# Test Page 1" in content
             assert "# Test Page 2" in content

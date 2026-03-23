@@ -308,7 +308,7 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
     }
     
     try:
-        async with await anyio.open_file(output_path, "w", encoding="utf-8") as md_file:
+        async with await anyio.Path(output_path).open("w", encoding="utf-8") as md_file:
             for result in results:
                 text_for_output, error_type = _extract_page_content_and_errors(result)
 
