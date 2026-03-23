@@ -35,18 +35,18 @@ cd crawl4ai-mcp
 
 ```bash
 # Windows
-python -m venv .venv
-.venv\Scripts\activate
+uv venv
+source .venv/bin/activate
 
 # Linux/MacOS
-python -m venv .venv
+uv venv
 source .venv/bin/activate
 ```
 
 3. आवश्यक डिपेंडेंसीज इंस्टॉल करें:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 कॉन्फ़िगरेशन
@@ -59,9 +59,11 @@ pip install -r requirements.txt
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -79,9 +81,11 @@ pip install -r requirements.txt
 {
   "mcpServers": {
     "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -138,6 +142,8 @@ MCP टूल कॉन्फ़िगर करने के बाद, आप 
 | max_depth | इंटीजर | अधिकतम क्रॉलिंग गहराई | 2 |
 | include_external | बूलियन | बाहरी लिंक शामिल करें | false |
 | verbose | बूलियन | विस्तृत आउटपुट सक्षम करें | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | स्ट्रिंग | आउटपुट फ़ाइल पथ | स्वचालित रूप से उत्पन्न |
 
 ## 📊 परिणाम प्रारूप

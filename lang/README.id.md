@@ -35,18 +35,18 @@ cd crawl4ai-mcp
 
 ```bash
 # Windows
-python -m venv .venv
-.venv\Scripts\activate
+uv venv
+source .venv/bin/activate
 
 # Linux/MacOS
-python -m venv .venv
+uv venv
 source .venv/bin/activate
 ```
 
 3. Pasang dependensi yang diperlukan:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 Konfigurasi
@@ -59,9 +59,11 @@ Untuk menggunakan crawler ini dengan asisten AI seperti VScode Cline, konfiguras
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -79,9 +81,11 @@ Ganti `PATH\\TO\\YOUR\\ENVIRONMENT` dan `PATH\\TO\\YOUR\\PROJECT` dengan jalur y
 {
   "mcpServers": {
     "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -138,6 +142,8 @@ Alat crawl menerima parameter berikut:
 | max_depth | integer | Kedalaman crawling maksimum | 2 |
 | include_external | boolean | Sertakan tautan eksternal | false |
 | verbose | boolean | Aktifkan output detail | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | string | Jalur file output | dibuat otomatis |
 
 ## 📊 Format Hasil

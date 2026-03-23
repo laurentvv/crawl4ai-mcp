@@ -35,18 +35,18 @@ cd crawl4ai-mcp
 
 ```bash
 # Windows
-python -m venv .venv
-.venv\Scripts\activate
+uv venv
+source .venv/bin/activate
 
 # Linux/MacOS
-python -m venv .venv
+uv venv
 source .venv/bin/activate
 ```
 
 3. تثبيت التبعيات المطلوبة:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 التكوين
@@ -59,9 +59,11 @@ pip install -r requirements.txt
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -79,9 +81,11 @@ pip install -r requirements.txt
 {
   "mcpServers": {
     "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -138,6 +142,8 @@ pip install -r requirements.txt
 | max_depth | عدد صحيح | الحد الأقصى لعمق الزحف | 2 |
 | include_external | منطقي | تضمين الروابط الخارجية | false |
 | verbose | منطقي | تمكين المخرجات المفصلة | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | سلسلة | مسار ملف المخرجات | يتم إنشاؤه تلقائيًا |
 
 ## 📊 تنسيق النتائج

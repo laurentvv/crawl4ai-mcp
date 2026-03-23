@@ -1,0 +1,37 @@
+[project]
+name = "crawl4ai-mcp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "anyio>=4.12.1",
+    "chardet==5.2.0",
+    "click>=8.3.1",
+    "crawl4ai>=0.8.5",
+    "httpx>=0.28.1",
+    "lxml>=5.4.0",
+    "mcp>=1.26.0",
+    "playwright>=1.58.0",
+    "starlette>=1.0.0",
+    "urllib3==1.26.15",
+    "uvicorn>=0.42.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[project.scripts]
+crawl4ai-mcp = "crawl4ai_mcp:main"
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crawl4ai_mcp"]

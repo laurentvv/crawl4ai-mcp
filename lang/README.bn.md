@@ -35,18 +35,18 @@ cd crawl4ai-mcp
 
 ```bash
 # Windows
-python -m venv .venv
-.venv\Scripts\activate
+uv venv
+source .venv/bin/activate
 
 # Linux/MacOS
-python -m venv .venv
+uv venv
 source .venv/bin/activate
 ```
 
 3. প্রয়োজনীয় নির্ভরতাগুলি ইনস্টল করুন:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 কনফিগারেশন
@@ -59,9 +59,11 @@ VScode Cline এর মতো AI সহায়কদের সাথে এই
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -79,9 +81,11 @@ VScode Cline এর মতো AI সহায়কদের সাথে এই
 {
   "mcpServers": {
     "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -138,6 +142,8 @@ MCP টুল কনফিগার করার পরে আপনি Claude �
 | max_depth | ইন্টিজার | সর্বাধিক ক্রলিং গভীরতা | 2 |
 | include_external | বুলিয়ান | বাহ্যিক লিঙ্ক অন্তর্ভুক্ত করুন | false |
 | verbose | বুলিয়ান | বিস্তারিত আউটপুট সক্ষম করুন | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | স্ট্রিং | আউটপুট ফাইল পাথ | স্বয়ংক্রিয়ভাবে তৈরি |
 
 ## 📊 ফলাফল ফরম্যাট

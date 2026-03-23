@@ -35,18 +35,18 @@ cd crawl4ai-mcp
 
 ```bash
 # Windows
-python -m venv .venv
-.venv\Scripts\activate
+uv venv
+source .venv/bin/activate
 
 # Linux/MacOS
-python -m venv .venv
+uv venv
 source .venv/bin/activate
 ```
 
 3. Instale as dependências necessárias:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ## 🔧 Configuração
@@ -59,9 +59,11 @@ Para usar este rastreador com assistentes de IA como VScode Cline, configure seu
 {
   "mcpServers": {
     "crawl": {
-      "command": "PATH\\TO\\YOUR\\ENVIRONMENT\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "PATH\\TO\\YOUR\\PROJECT\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -79,9 +81,11 @@ Substitua `PATH\\TO\\YOUR\\ENVIRONMENT` e `PATH\\TO\\YOUR\\PROJECT` pelos caminh
 {
   "mcpServers": {
     "crawl": {
-      "command": "C:\\Python\\crawl4ai-mcp\\.venv\\Scripts\\python.exe",
+      "command": "uvx",
       "args": [
-        "D:\\Python\\crawl4ai-mcp\\crawl_mcp.py"
+        "--from",
+        "git+https://github.com/laurentvv/crawl4ai-mcp",
+        "crawl4ai-mcp"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -138,6 +142,8 @@ A ferramenta de rastreamento aceita os seguintes parâmetros:
 | max_depth | inteiro | Profundidade máxima de rastreamento | 2 |
 | include_external | booleano | Incluir links externos | false |
 | verbose | booleano | Ativar saída detalhada | true |
+| wait_for_selector | string | CSS selector to wait for before extracting content. | None |
+| return_content | boolean | Whether to return the extracted content directly in the MCP response | true |
 | output_file | string | Caminho do arquivo de saída | gerado automaticamente |
 
 ## 📊 Formato do Resultado
