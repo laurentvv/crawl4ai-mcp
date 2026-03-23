@@ -98,10 +98,9 @@ def generate_filename_from_url(url):
 
 def get_results_directory():
     """Returns the path to the directory for storing results"""
-    # Use a folder in the project instead of temp
-    results_dir = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), "crawl_results"
-    )
+    # Use the current working directory (os.getcwd()) to store results in the user's project
+    # instead of the package installation directory (e.g., in a uv cache)
+    results_dir = os.path.join(os.getcwd(), "crawl_results")
 
     # Create the folder if it doesn't exist
     if not os.path.exists(results_dir):
