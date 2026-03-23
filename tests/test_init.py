@@ -1,6 +1,5 @@
 import pytest
-import anyio
-from crawl4ai_mcp.__init__ import crawl_tool, list_tools, app
+from crawl4ai_mcp.__init__ import list_tools, app
 
 @pytest.mark.anyio
 async def test_list_tools():
