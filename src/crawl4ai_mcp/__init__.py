@@ -21,6 +21,23 @@ if sys.stdout.encoding != "utf-8":
 if sys.stderr.encoding != "utf-8":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
+UNICODE_REPLACEMENTS = {
+    "\u2192": "->",  # Right arrow → becomes ->
+    "\u2190": "<-",  # Left arrow ← becomes <-
+    "\u2191": "^",   # Up arrow ↑ becomes ^
+    "\u2193": "v",   # Down arrow ↓ becomes v
+    "\u2022": "*",   # Bullet • becomes *
+    "\u2013": "-",   # En dash – becomes -
+    "\u2014": "--",  # Em dash — becomes --
+    "\u2018": "'",   # Left single quotation mark ' becomes '
+    "\u2019": "'",   # Right single quotation mark ' becomes '
+    "\u201c": '"',   # Left double quotation mark " becomes "
+    "\u201d": '"',   # Right double quotation mark " becomes "
+    "\u2026": "...", # Ellipsis … becomes ...
+    "\u00a0": " ",   # Non-breaking space   becomes normal space
+}
+
+
 
 # Improved function to sanitize texts with explicit replacement of problematic characters
 def sanitize_text(text):
@@ -57,25 +74,8 @@ def sanitize_text(text):
         text.encode(sys.getdefaultencoding())
     except UnicodeEncodeError:
         # If it can't, replace problematic characters
-        # List of explicit replacements for known problematic characters
-        replacements = {
-            "\u2192": "->",  # Right arrow → becomes ->
-            "\u2190": "<-",  # Left arrow ← becomes <-
-            "\u2191": "^",   # Up arrow ↑ becomes ^
-            "\u2193": "v",   # Down arrow ↓ becomes v
-            "\u2022": "*",   # Bullet • becomes *
-            "\u2013": "-",   # En dash – becomes -
-            "\u2014": "--",  # Em dash — becomes --
-            "\u2018": "'",   # Left single quotation mark ' becomes '
-            "\u2019": "'",   # Right single quotation mark ' becomes '
-            "\u201c": '"',   # Left double quotation mark " becomes "
-            "\u201d": '"',   # Right double quotation mark " becomes "
-            "\u2026": "...", # Ellipsis … becomes ...
-            "\u00a0": " ",   # Non-breaking space   becomes normal space
-        }
-
         # Apply explicit replacements
-        for char, replacement in replacements.items():
+        for char, replacement in UNICODE_REPLACEMENTS.items():
             text = text.replace(char, replacement)
 
         # Eliminate all other non-ASCII characters that might cause problems
