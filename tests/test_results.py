@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import pytest
 import anyio
 import os
@@ -72,3 +73,15 @@ async def test_results_to_markdown_with_errors():
     finally:
         if os.path.exists(output_path):
             os.remove(output_path)
+
+@pytest.mark.anyio
+async def test_results_to_markdown_exception():
+    results = [MockResult(1)]
+    output_path = "test_output_exception.md"
+
+    # Mock anyio.Path.open to raise an exception
+    with patch("anyio.Path.open", side_effect=PermissionError("Permission denied")):
+        res = await results_to_markdown(results, output_path)
+
+        assert "error" in res
+        assert res["error"] == "Writing error: Permission denied"
