@@ -2,7 +2,7 @@ from unittest.mock import patch
 import pytest
 import anyio
 import os
-from crawl4ai_mcp import results_to_markdown, _extract_page_content_and_errors
+from crawl4ai_mcp import results_to_markdown, _extract_page_content_and_errors, crawl_and_output_to_markdown
 
 class MockResult:
     def __init__(self, i, error_type=None):
@@ -147,3 +147,29 @@ def test_extract_page_content_and_errors_normal():
     content, error_type = _extract_page_content_and_errors(result)
     assert content == "This is a great page"
     assert error_type is None
+
+
+@pytest.mark.anyio
+async def test_crawl_and_output_to_markdown_exception():
+    class MockCrawlerContext:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+        async def arun(self, url, **kwargs):
+            raise Exception("Simulated crawl error")
+
+    with patch("crawl4ai_mcp.AsyncWebCrawler", return_value=MockCrawlerContext()):
+        result = await crawl_and_output_to_markdown("https://example.com")
+
+        assert "error" in result
+        assert result["error"] == "Crawling error: Simulated crawl error"
+        assert result["file_path"] is None
+        assert "stats" in result
+        assert result["stats"]["successful_pages"] == 0
+        assert result["stats"]["failed_pages"] == 0
+        assert result["stats"]["not_found_pages"] == 0
+        assert result["stats"]["forbidden_pages"] == 0
+        assert result["stats"]["duration_seconds"] == 0
