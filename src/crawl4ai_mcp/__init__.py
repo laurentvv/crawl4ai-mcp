@@ -8,6 +8,7 @@ from datetime import datetime
 import click
 import urllib.parse
 import mcp.types as types
+import anyio
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 from crawl4ai.content_scraping_strategy import LXMLWebScrapingStrategy
 from crawl4ai.deep_crawling import BFSDeepCrawlStrategy
@@ -307,7 +308,7 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
     }
     
     try:
-        with open(output_path, "w", encoding="utf-8") as md_file:
+        async with await anyio.Path(output_path).open("w", encoding="utf-8") as md_file:
             for result in results:
                 text_for_output, error_type = _extract_page_content_and_errors(result)
 
@@ -332,7 +333,7 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
                     continue
 
                 md_content = _format_markdown_page(result, text_for_output)
-                md_file.write(md_content)
+                await md_file.write(md_content)
                 stats["successful_pages"] += 1
             
             # Display a summary at the end
