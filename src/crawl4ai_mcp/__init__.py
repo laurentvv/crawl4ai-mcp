@@ -413,8 +413,8 @@ async def crawl_tool(
         content_text = ""
         if return_content and file_path:
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    content_text = f.read()
+                async with await anyio.Path(file_path).open("r", encoding="utf-8") as f:
+                    content_text = await f.read()
 
                 max_chars = 50000
                 if len(content_text) > max_chars:
