@@ -1,13 +1,21 @@
 import os
 import sys
+from unittest.mock import MagicMock
 
-def is_safe_path(path, base_dir):
-    """
-    Checks if the path is safe (i.e., it is within the base_dir).
-    """
-    abs_base = os.path.abspath(base_dir)
-    abs_path = os.path.abspath(path)
-    return abs_path.startswith(abs_base + os.sep) or abs_path == abs_base
+# Mock out heavy dependencies that might not be available or fail to load
+sys.modules["anyio"] = MagicMock()
+sys.modules["click"] = MagicMock()
+sys.modules["mcp"] = MagicMock()
+sys.modules["mcp.types"] = MagicMock()
+sys.modules["mcp.server"] = MagicMock()
+sys.modules["mcp.server.lowlevel"] = MagicMock()
+sys.modules["crawl4ai"] = MagicMock()
+sys.modules["crawl4ai.content_scraping_strategy"] = MagicMock()
+sys.modules["crawl4ai.deep_crawling"] = MagicMock()
+
+# Now we can import from our module safely
+sys.path.append(os.path.join(os.getcwd(), "src"))
+from crawl4ai_mcp import is_safe_path
 
 def test_is_safe_path():
     cwd = os.getcwd()
@@ -50,6 +58,20 @@ def test_is_safe_path():
         if safe:
             print(f"FAILED: {path} should be unsafe")
             all_passed = False
+
+    # Test symlink attack (if possible in this env)
+    evil_link = os.path.join(base_dir, "evil")
+    if not os.path.exists(evil_link):
+        try:
+            os.symlink("/", evil_link)
+            attack_path = os.path.join(evil_link, "etc/shadow")
+            safe = is_safe_path(attack_path, base_dir)
+            print(f"Symlink attack Path: {attack_path:40} -> {'SAFE' if safe else 'UNSAFE'}")
+            if safe:
+                print(f"FAILED: Symlink attack path {attack_path} should be unsafe")
+                all_passed = False
+        except (OSError, NotImplementedError):
+            print("Skipping symlink test (not supported in this environment)")
 
     if all_passed:
         print("\nAll path validation tests PASSED!")

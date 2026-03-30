@@ -118,8 +118,8 @@ def is_safe_path(path, base_dir):
     Returns:
         bool: True if the path is safe, False otherwise.
     """
-    abs_base = os.path.abspath(base_dir)
-    abs_path = os.path.abspath(path)
+    abs_base = os.path.realpath(base_dir)
+    abs_path = os.path.realpath(path)
     # Ensure the path starts with the base directory and handles directory separators correctly
     return abs_path.startswith(abs_base + os.sep) or abs_path == abs_base
 
@@ -191,7 +191,7 @@ async def crawl_and_output_to_markdown(start_url: str,
         # Use the project folder instead of the temporary folder
         output_file = os.path.join(results_dir, generate_filename_from_url(start_url))
     else:
-        # Validate that the output file path is safe (doesn't exit the results directory)
+        # Validate that the output file path is safe (doesn't escape the results directory)
         if not is_safe_path(output_file, results_dir):
             raise ValueError(f"Unsafe output file path: {output_file}. Paths must be within the 'crawl_results' directory.")
 
