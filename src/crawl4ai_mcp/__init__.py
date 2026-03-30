@@ -108,6 +108,15 @@ def get_results_directory():
 
     return results_dir
 
+def is_safe_path(path, base_dir):
+    """Checks if a path is safe (i.e., within the base directory)"""
+    # Use realpath to resolve any symlinks and .. components
+    abs_path = os.path.realpath(path)
+    abs_base = os.path.realpath(base_dir)
+
+    # Check if abs_path is within abs_base
+    return os.path.commonpath([abs_path, abs_base]) == abs_base
+
 def remove_links_from_markdown(markdown_text):
     """
     Remove links and images from markdown text while preserving text and code indentation.
@@ -169,10 +178,29 @@ async def crawl_and_output_to_markdown(start_url: str,
     Returns:
         A dictionary containing the file path and statistics
     """
+    results_dir = get_results_directory()
+
     # Generate a filename if not specified
     if not output_file:
         # Use the project folder instead of the temporary folder
-        output_file = os.path.join(get_results_directory(), generate_filename_from_url(start_url))
+        output_file = os.path.join(results_dir, generate_filename_from_url(start_url))
+    else:
+        # Ensure the provided output_file is within the results directory
+        if not os.path.isabs(output_file):
+            output_file = os.path.join(results_dir, output_file)
+
+        if not is_safe_path(output_file, results_dir):
+            return {
+                "error": f"Invalid output path: {output_file}. Paths must be within {results_dir}",
+                "file_path": None,
+                "stats": {
+                    "successful_pages": 0,
+                    "failed_pages": 0,
+                    "not_found_pages": 0,
+                    "forbidden_pages": 0,
+                    "duration_seconds": 0
+                }
+            }
 
     # Set basic configuration
     config = CrawlerRunConfig(
