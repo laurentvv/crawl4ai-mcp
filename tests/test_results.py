@@ -1,6 +1,5 @@
 from unittest.mock import patch
 import pytest
-import anyio
 import os
 from crawl4ai_mcp import results_to_markdown, _extract_page_content_and_errors, crawl_and_output_to_markdown
 
@@ -42,8 +41,8 @@ async def test_results_to_markdown_success():
 
         # Verify file contents
         assert os.path.exists(output_path)
-        async with await anyio.Path(output_path).open("r") as f:
-            content = await f.read()
+        with open(output_path, "r", encoding="utf-8") as f:
+            content = f.read()
             assert "# Test Page 1" in content
             assert "# Test Page 2" in content
 
@@ -79,8 +78,14 @@ async def test_results_to_markdown_exception():
     results = [MockResult(1)]
     output_path = "test_output_exception.md"
 
-    # Mock anyio.Path.open to raise an exception
-    with patch("anyio.Path.open", side_effect=PermissionError("Permission denied")):
+    # Mock anyio.Path to return a mock that throws an exception when open() is awaited
+    class MockPathOpen:
+        def __init__(self, *args, **kwargs):
+            pass
+        async def open(self, *args, **kwargs):
+            raise PermissionError("Permission denied")
+
+    with patch("crawl4ai_mcp.anyio.Path", side_effect=MockPathOpen):
         res = await results_to_markdown(results, output_path)
 
         assert "error" in res

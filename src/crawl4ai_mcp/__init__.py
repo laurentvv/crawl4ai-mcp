@@ -219,7 +219,7 @@ async def crawl_and_output_to_markdown(start_url: str,
             print(f"Crawled {len(results)} pages in total")
             
             # Create the parent folder if necessary
-            os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
+            await anyio.Path(os.path.dirname(os.path.abspath(output_file))).mkdir(parents=True, exist_ok=True)
             
             # Call results_to_markdown and get the result
             return await results_to_markdown(results, output_file)
