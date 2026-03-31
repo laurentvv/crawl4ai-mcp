@@ -113,21 +113,14 @@ def get_results_directory():
 
     return results_dir
 
-
 def is_safe_path(path, base_dir):
-    """
-    Checks if the path is safe (i.e., it is within the base_dir).
-    Args:
-        path (str): The path to check.
-        base_dir (str): The base directory.
-    Returns:
-        bool: True if the path is safe, False otherwise.
-    """
-    abs_base = os.path.realpath(base_dir)
+    """Checks if a path is safe (i.e., within the base directory)"""
+    # Use realpath to resolve any symlinks and .. components
     abs_path = os.path.realpath(path)
-    # Ensure the path starts with the base directory and handles directory separators correctly
-    return abs_path.startswith(abs_base + os.sep) or abs_path == abs_base
+    abs_base = os.path.realpath(base_dir)
 
+    # Check if abs_path is within abs_base
+    return os.path.commonpath([abs_path, abs_base]) == abs_base
 
 def remove_links_from_markdown(markdown_text):
     """
@@ -190,15 +183,30 @@ async def crawl_and_output_to_markdown(start_url: str,
     Returns:
         A dictionary containing the file path and statistics
     """
+    results_dir = get_results_directory()
+
     # Generate a filename if not specified
     results_dir = get_results_directory()
     if not output_file:
         # Use the project folder instead of the temporary folder
         output_file = os.path.join(results_dir, generate_filename_from_url(start_url))
     else:
-        # Validate that the output file path is safe (doesn't escape the results directory)
+        # Ensure the provided output_file is within the results directory
+        if not os.path.isabs(output_file):
+            output_file = os.path.join(results_dir, output_file)
+
         if not is_safe_path(output_file, results_dir):
-            raise ValueError(f"Unsafe output file path: {output_file}. Paths must be within the 'crawl_results' directory.")
+            return {
+                "error": f"Invalid output path: {output_file}. Paths must be within {results_dir}",
+                "file_path": None,
+                "stats": {
+                    "successful_pages": 0,
+                    "failed_pages": 0,
+                    "not_found_pages": 0,
+                    "forbidden_pages": 0,
+                    "duration_seconds": 0
+                }
+            }
 
     # Set basic configuration
     config = CrawlerRunConfig(
