@@ -1,18 +1,23 @@
-import re
 import io
 import os
+import re
 import sys
 import traceback
+import urllib.parse
 from datetime import datetime
 
-import click
-import urllib.parse
-import mcp.types as types
 import anyio
+import click
+import uvicorn
+import mcp.types as types
 from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
 from crawl4ai.content_scraping_strategy import LXMLWebScrapingStrategy
 from crawl4ai.deep_crawling import BFSDeepCrawlStrategy
 from mcp.server.lowlevel import Server
+from mcp.server.sse import SseServerTransport
+from mcp.server.stdio import stdio_server
+from starlette.applications import Starlette
+from starlette.routing import Mount, Route
 
 os.environ["PYTHONIOENCODING"] = "utf-8"
 # Force UTF-8 usage for stdout/stderr
@@ -181,6 +186,7 @@ async def crawl_and_output_to_markdown(start_url: str,
     results_dir = get_results_directory()
 
     # Generate a filename if not specified
+    results_dir = get_results_directory()
     if not output_file:
         # Use the project folder instead of the temporary folder
         output_file = os.path.join(results_dir, generate_filename_from_url(start_url))
@@ -221,7 +227,7 @@ async def crawl_and_output_to_markdown(start_url: str,
             print(f"Crawled {len(results)} pages in total")
             
             # Create the parent folder if necessary
-            os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
+            await anyio.Path(os.path.dirname(os.path.abspath(output_file))).mkdir(parents=True, exist_ok=True)
             
             # Call results_to_markdown and get the result
             return await results_to_markdown(results, output_file)
@@ -522,11 +528,6 @@ async def list_tools() -> list[types.Tool]:
     ]
 
 def run_sse_server(app: Server, port: int):
-    from mcp.server.sse import SseServerTransport
-    from starlette.applications import Starlette
-    from starlette.routing import Mount, Route
-    import uvicorn
-
     sse = SseServerTransport("/messages/")
 
     async def handle_sse(request):
@@ -548,9 +549,6 @@ def run_sse_server(app: Server, port: int):
     uvicorn.run(starlette_app, host="127.0.0.1", port=port)
 
 def run_stdio_server(app: Server):
-    from mcp.server.stdio import stdio_server
-    import anyio
-
     async def arun():
         async with stdio_server() as streams:
             await app.run(
