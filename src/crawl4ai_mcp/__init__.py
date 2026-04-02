@@ -122,15 +122,33 @@ def is_safe_path(path, base_dir):
     # Check if abs_path is within abs_base
     return os.path.commonpath([abs_path, abs_base]) == abs_base
 
+def clean_ui_artifacts(text):
+    """Remove common UI artifacts and empty markdown tags."""
+    # Common UI strings to remove
+    ui_strings = [
+        r"(?i)^\s*Skip to main content\s*$",
+        r"(?i)^\s*Search\.\.\.\s*$",
+        r"(?i)^\s*Ctrl K\s*$",
+        r"(?i)^\s*Copy page\s*$",
+        r"(?i)^\s*Was this page helpful\? YesNo\s*$",
+        r"(?i)^\s*Powered by.*?Mintlify\s*$"
+    ]
+
+    for pattern in ui_strings:
+        text = re.sub(pattern, "", text, flags=re.MULTILINE)
+
+    # Remove empty markdown headers like "## "
+    # We avoid using actual unicode escape characters in the python source text here
+    # to avoid syntax errors in string literals.
+    text = re.sub(r'#+\s*(?:\n|\r|\s)*\n', '\n', text)
+
+    # Clean up excessive newlines again
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    return text
+
 def remove_links_from_markdown(markdown_text):
     """
     Remove links and images from markdown text while preserving text and code indentation.
-    
-    Args:
-        markdown_text (str): The markdown text to be processed
-        
-    Returns:
-        str: Markdown text with links and images removed
     """
     # Identify and protect code blocks
     code_blocks = []
@@ -144,14 +162,17 @@ def remove_links_from_markdown(markdown_text):
     # Identify code blocks (between ``` and ```) and replace them with placeholders
     markdown_with_placeholders = re.sub(r'```[\s\S]*?```', save_code_block, markdown_text)
     
+    # Completely remove images in ![text](url) format BEFORE links
+    text_without_images = re.sub(r'!\[[^\]]*\]\([^)]+\)', '', markdown_with_placeholders)
+
     # Replace links in [text](url) format with just the text
-    text_without_links = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', markdown_with_placeholders)
+    text_without_links = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text_without_images)
     
-    # Completely remove images in ![text](url) format
-    text_without_images = re.sub(r'!\[[^\]]*\]\([^)]+\)', '', text_without_links)
+    # Clean UI artifacts
+    text_cleaned = clean_ui_artifacts(text_without_links)
     
     # Remove lines containing only spaces
-    text_without_empty_lines = re.sub(r'\n\s*\n', '\n\n', text_without_images)
+    text_without_empty_lines = re.sub(r'\n\s*\n', '\n\n', text_cleaned)
     
     # Remove blocks of consecutive spaces (but not in code blocks)
     text_without_extra_spaces = re.sub(r' {2,}', ' ', text_without_empty_lines)
@@ -262,10 +283,10 @@ def _extract_page_content_and_errors(result) -> tuple[str | None, str | None]:
         return text_for_output, error_type
 
     # Check metadata title for error indicators
-    title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") else "Untitled page"
+    title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") and result.metadata and result.metadata.get("title") is not None else "Untitled page"
     error_indicators = ["404", "403", "Not Found", "Forbidden"]
-    if any(indicator in title for indicator in error_indicators):
-        error_type = "404" if "404" in title or "Not Found" in title else "403"
+    if title and any(indicator in str(title) for indicator in error_indicators):
+        error_type = "404" if "404" in str(title) or "Not Found" in str(title) else "403"
         # We still want to use the text but note it's an error
         return text_for_output, error_type
 
@@ -352,10 +373,10 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
                     continue
                 elif error_type in ("404", "403"):
                     # For title errors, original code prints slightly differently
-                    title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") else "Untitled page"
+                    title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") and result.metadata and result.metadata.get("title") is not None else "Untitled page"
                     error_indicators = ["404", "403", "Not Found", "Forbidden"]
                     
-                    if any(indicator in title for indicator in error_indicators):
+                    if title and any(indicator in str(title) for indicator in error_indicators):
                         print(f"Page with error title detected and skipped: {result.url}")
                     else:
                         print(f"{error_type} page detected and skipped: {result.url}")
