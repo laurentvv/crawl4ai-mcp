@@ -299,6 +299,7 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
         
         # Extract links
         links = {"internal": [], "external": []}
+        seen_hrefs = {"internal": set(), "external": set()}
         for result in results:
             if hasattr(result, "links") and isinstance(result.links, dict):
                 for k in ["internal", "external"]:
@@ -306,8 +307,9 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
                         for link in result.links[k]:
                             # avoid duplicates based on href
                             href = link.get('href')
-                            if href and not any(l.get('href') == href for l in links[k]):
+                            if href and href not in seen_hrefs[k]:
                                 links[k].append(link)
+                                seen_hrefs[k].add(href)
 
         # Finalize statistics
         stats["end_time"] = datetime.now()
