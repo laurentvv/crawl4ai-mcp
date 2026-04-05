@@ -96,15 +96,16 @@ def generate_filename_from_url(url):
     return f"crawl_{hostname}_{timestamp}.md"
 
 
-def get_results_directory():
+async def get_results_directory():
     """Returns the path to the directory for storing results"""
     # Use the current working directory (os.getcwd()) to store results in the user's project
     # instead of the package installation directory (e.g., in a uv cache)
     results_dir = os.path.join(os.getcwd(), "crawl_results")
 
     # Create the folder if it doesn't exist
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+    path = anyio.Path(results_dir)
+    if not await path.exists():
+        await path.mkdir(parents=True, exist_ok=True)
 
     return results_dir
 
@@ -172,7 +173,7 @@ async def crawl_and_output_to_markdown(start_url: str,
     # Generate a filename if not specified
     if not output_file:
         # Use the project folder instead of the temporary folder
-        output_file = os.path.join(get_results_directory(), generate_filename_from_url(start_url))
+        output_file = os.path.join(await get_results_directory(), generate_filename_from_url(start_url))
 
     # Set basic configuration
     config = CrawlerRunConfig(
@@ -193,7 +194,8 @@ async def crawl_and_output_to_markdown(start_url: str,
             print(f"Crawled {len(results)} pages in total")
             
             # Create the parent folder if necessary
-            os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
+            parent_dir = os.path.dirname(os.path.abspath(output_file))
+            await anyio.Path(parent_dir).mkdir(parents=True, exist_ok=True)
             
             # Call results_to_markdown and get the result
             return await results_to_markdown(results, output_file)
