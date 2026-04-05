@@ -130,14 +130,15 @@ def remove_links_from_markdown(markdown_text):
     # Identify code blocks (between ``` and ```) and replace them with placeholders
     markdown_with_placeholders = re.sub(r'```[\s\S]*?```', save_code_block, markdown_text)
     
+    # Completely remove images in ![text](url) format first
+    # (to avoid leaving ! artifacts when link removal matches the link part of an image)
+    text_without_images = re.sub(r'!\[[^\]]*\]\([^)]+\)', '', markdown_with_placeholders)
+
     # Replace links in [text](url) format with just the text
-    text_without_links = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', markdown_with_placeholders)
+    text_without_links = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text_without_images)
     
-    # Completely remove images in ![text](url) format
-    text_without_images = re.sub(r'!\[[^\]]*\]\([^)]+\)', '', text_without_links)
-    
-    # Remove lines containing only spaces
-    text_without_empty_lines = re.sub(r'\n\s*\n', '\n\n', text_without_images)
+    # Collapse multiple empty lines (3 or more) into a single empty line (\n\n)
+    text_without_empty_lines = re.sub(r'\n\s*\n\s*\n+', '\n\n', text_without_links)
     
     # Remove blocks of consecutive spaces (but not in code blocks)
     text_without_extra_spaces = re.sub(r' {2,}', ' ', text_without_empty_lines)
