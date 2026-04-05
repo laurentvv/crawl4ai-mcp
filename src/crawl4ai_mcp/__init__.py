@@ -521,7 +521,6 @@ def run_sse_server(app: Server, port: int):
 
 def run_stdio_server(app: Server):
     from mcp.server.stdio import stdio_server
-    import anyio
 
     async def arun():
         async with stdio_server() as streams:
