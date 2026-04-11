@@ -1,6 +1,8 @@
+import pytest
 import asyncio
 from src.crawl4ai_mcp import crawl_tool
 
+@pytest.mark.anyio
 async def test_ansible_docs():
     print("Starting crawl of Ansible docs with basic extraction...")
     args = {

@@ -179,9 +179,11 @@ def remove_links_from_markdown(markdown_text):
     text_without_extra_spaces = re.sub(r' {2,}', ' ', text_without_empty_lines)
     
     # Put the code blocks back in place
-    result = text_without_extra_spaces
-    for i, code_block in enumerate(code_blocks):
-        result = result.replace(f"__CODE_BLOCK_{i}__", code_block)
+    def restore_code_block(match):
+        index = int(match.group(1))
+        return code_blocks[index]
+
+    result = re.sub(r'__CODE_BLOCK_(\d+)__', restore_code_block, text_without_extra_spaces)
     
     return result
 
