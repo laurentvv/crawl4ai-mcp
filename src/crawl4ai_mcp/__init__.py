@@ -74,6 +74,9 @@ def sanitize_text(text):
     if not isinstance(text, str):
         text = str(text)
 
+    if text.isascii():
+        return text
+
     try:
         # Test if the text can be encoded in the default system encoding
         text.encode(sys.getdefaultencoding())
@@ -81,10 +84,12 @@ def sanitize_text(text):
         # If it can't, replace problematic characters
         # Apply explicit replacements
         for char, replacement in UNICODE_REPLACEMENTS.items():
-            text = text.replace(char, replacement)
+            if char in text:
+                text = text.replace(char, replacement)
 
         # Eliminate all other non-ASCII characters that might cause problems
-        text = re.sub(r"[^\x00-\x7F]+", " ", text)
+        if not text.isascii():
+            text = re.sub(r"[^\x00-\x7F]+", " ", text)
 
     return text
 
