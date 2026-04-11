@@ -610,7 +610,7 @@ def run_sse_server(app: Server, port: int):
             )
 
     starlette_app = Starlette(
-        debug=True,
+        debug=os.getenv("CRAWL4AI_MCP_DEBUG", "False").lower() == "true",
         routes=[
             Route("/sse", endpoint=handle_sse),
             Mount("/messages/", app=sse.handle_post_message),
