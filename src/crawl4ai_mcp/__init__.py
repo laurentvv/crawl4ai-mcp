@@ -190,6 +190,11 @@ async def crawl_and_output_to_markdown(start_url: str,
     verbose: bool = True,
     output_file: str = None,
     wait_for_selector: str = None,
+    magic: bool = False,
+    css_selector: str = None,
+    js_code: str = None,
+    session_id: str = None,
+    delay_before_return_html: float = None,
 ) -> dict:
     """
     Crawl a website and save the results to a file
@@ -237,10 +242,19 @@ async def crawl_and_output_to_markdown(start_url: str,
         ),
         scraping_strategy=LXMLWebScrapingStrategy(),
         verbose=verbose,
+        magic=magic,
     )
 
     if wait_for_selector:
         config.wait_for = wait_for_selector
+    if css_selector:
+        config.css_selector = css_selector
+    if js_code:
+        config.js_code = js_code
+    if session_id:
+        config.session_id = session_id
+    if delay_before_return_html is not None:
+        config.delay_before_return_html = delay_before_return_html
 
     try:
         async with AsyncWebCrawler() as crawler:
@@ -434,6 +448,11 @@ async def crawl_tool(
     output_file = arguments.get("output_file", None)
     wait_for_selector = arguments.get("wait_for_selector", None)
     return_content = arguments.get("return_content", True)
+    magic = arguments.get("magic", False)
+    css_selector = arguments.get("css_selector", None)
+    js_code = arguments.get("js_code", None)
+    session_id = arguments.get("session_id", None)
+    delay_before_return_html = arguments.get("delay_before_return_html", None)
 
     try:
         result = await crawl_and_output_to_markdown(
@@ -443,6 +462,11 @@ async def crawl_tool(
             verbose=verbose,
             output_file=output_file,
             wait_for_selector=wait_for_selector,
+            magic=magic,
+            css_selector=css_selector,
+            js_code=js_code,
+            session_id=session_id,
+            delay_before_return_html=delay_before_return_html,
         )
 
         if result["error"]:
@@ -542,6 +566,27 @@ async def list_tools() -> list[types.Tool]:
                         "type": "boolean",
                         "description": "Whether to return the extracted content directly in the MCP response",
                         "default": True,
+                    },
+                    "magic": {
+                        "type": "boolean",
+                        "description": "Enable magic mode to bypass anti-bots and simulate a real browser",
+                        "default": False,
+                    },
+                    "css_selector": {
+                        "type": "string",
+                        "description": "Specific CSS selector to extract only targeted elements from the page",
+                    },
+                    "js_code": {
+                        "type": "string",
+                        "description": "Custom JavaScript code to execute on the page before extraction",
+                    },
+                    "session_id": {
+                        "type": "string",
+                        "description": "Persistent session identifier to keep cookies and browser state across requests",
+                    },
+                    "delay_before_return_html": {
+                        "type": "number",
+                        "description": "Delay in seconds to wait before extracting HTML (useful for heavy JS pages)",
                     },
                 },
             },
