@@ -1,3 +1,4 @@
+from unittest.mock import AsyncMock
 from unittest.mock import patch
 import pytest
 import os
@@ -178,3 +179,43 @@ async def test_crawl_and_output_to_markdown_exception():
         assert result["stats"]["not_found_pages"] == 0
         assert result["stats"]["forbidden_pages"] == 0
         assert result["stats"]["duration_seconds"] == 0
+
+@pytest.mark.anyio
+async def test_crawl_and_output_to_markdown_new_params():
+    class MockCrawlerContext:
+        def __init__(self):
+            self.captured_config = None
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type, exc_val, exc_tb):
+            pass
+
+        async def arun(self, url, **kwargs):
+            self.captured_config = kwargs.get("config")
+            return [] # Return empty results
+
+    mock_crawler = MockCrawlerContext()
+
+    with patch("crawl4ai_mcp.AsyncWebCrawler", return_value=mock_crawler):
+        # We need to mock anyio.Path.mkdir and results_to_markdown to avoid disk operations
+        with patch("anyio.Path.mkdir", new_callable=AsyncMock):
+            with patch("crawl4ai_mcp.results_to_markdown", new_callable=AsyncMock) as mock_results:
+                mock_results.return_value = {"file_path": "mocked.md", "stats": {}}
+
+                await crawl_and_output_to_markdown(
+                    "https://example.com",
+                    magic=True,
+                    css_selector=".main",
+                    js_code="console.log('test');",
+                    session_id="test_session",
+                    delay_before_return_html=2.5,
+                )
+
+                assert mock_crawler.captured_config is not None
+                assert mock_crawler.captured_config.magic is True
+                assert mock_crawler.captured_config.css_selector == ".main"
+                assert mock_crawler.captured_config.js_code == "console.log('test');"
+                assert mock_crawler.captured_config.session_id == "test_session"
+                assert mock_crawler.captured_config.delay_before_return_html == 2.5

@@ -35,3 +35,6 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/crawl4ai_mcp"]
+
+[tool.ruff.lint]
+extend-ignore = ["E402"]
