@@ -7,6 +7,13 @@ import urllib.parse
 from datetime import datetime
 
 import anyio
+
+# Pre-compiled UI artifact regex
+UI_ARTIFACTS_REGEX = re.compile(
+    r"(?i)^\s*(?:Skip to main content|Search\.\.\.|Ctrl K|Copy page|Was this page helpful\? YesNo|Powered by.*?Mintlify)\s*$",
+    flags=re.MULTILINE
+)
+
 import click
 import uvicorn
 import mcp.types as types
@@ -129,18 +136,7 @@ def is_safe_path(path, base_dir):
 
 def clean_ui_artifacts(text):
     """Remove common UI artifacts and empty markdown tags."""
-    # Common UI strings to remove
-    ui_strings = [
-        r"(?i)^\s*Skip to main content\s*$",
-        r"(?i)^\s*Search\.\.\.\s*$",
-        r"(?i)^\s*Ctrl K\s*$",
-        r"(?i)^\s*Copy page\s*$",
-        r"(?i)^\s*Was this page helpful\? YesNo\s*$",
-        r"(?i)^\s*Powered by.*?Mintlify\s*$"
-    ]
-
-    for pattern in ui_strings:
-        text = re.sub(pattern, "", text, flags=re.MULTILINE)
+    text = UI_ARTIFACTS_REGEX.sub("", text)
 
     # Remove empty markdown headers like "## "
     # We avoid using actual unicode escape characters in the python source text here
