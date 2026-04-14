@@ -21,18 +21,18 @@ sys.modules["starlette.routing"] = MagicMock()
 import pytest
 from crawl4ai_mcp import _extract_unique_links
 
-class MockResult:
+class MockCrawlResult:
     def __init__(self, links=None, has_links_attr=True):
         if has_links_attr:
             self.links = links
 
 def test_extract_unique_links_basic():
     results = [
-        MockResult(links={
+        MockCrawlResult(links={
             "internal": [{"href": "https://example.com/a", "text": "A"}],
             "external": [{"href": "https://google.com", "text": "Google"}]
         }),
-        MockResult(links={
+        MockCrawlResult(links={
             "internal": [{"href": "https://example.com/b", "text": "B"}],
             "external": [{"href": "https://github.com", "text": "GitHub"}]
         })
@@ -49,11 +49,11 @@ def test_extract_unique_links_basic():
 
 def test_extract_unique_links_deduplication():
     results = [
-        MockResult(links={
+        MockCrawlResult(links={
             "internal": [{"href": "https://example.com/a", "text": "A1"}],
             "external": [{"href": "https://google.com", "text": "Google1"}]
         }),
-        MockResult(links={
+        MockCrawlResult(links={
             "internal": [{"href": "https://example.com/a", "text": "A2"}],
             "external": [{"href": "https://google.com", "text": "Google2"}]
         })
@@ -69,8 +69,8 @@ def test_extract_unique_links_deduplication():
 
 def test_extract_unique_links_missing_attr():
     results = [
-        MockResult(has_links_attr=False),
-        MockResult(links={
+        MockCrawlResult(has_links_attr=False),
+        MockCrawlResult(links={
             "internal": [{"href": "https://example.com/a"}]
         })
     ]
@@ -81,8 +81,8 @@ def test_extract_unique_links_missing_attr():
 
 def test_extract_unique_links_not_dict():
     results = [
-        MockResult(links=["not", "a", "dict"]),
-        MockResult(links={
+        MockCrawlResult(links=["not", "a", "dict"]),
+        MockCrawlResult(links={
             "internal": [{"href": "https://example.com/a"}]
         })
     ]
@@ -97,11 +97,11 @@ def test_extract_unique_links_empty_input():
 
 def test_extract_unique_links_missing_keys():
     results = [
-        MockResult(links={
+        MockCrawlResult(links={
             "internal": [{"href": "https://example.com/a"}]
             # external missing
         }),
-        MockResult(links={
+        MockCrawlResult(links={
             "external": [{"href": "https://google.com"}]
             # internal missing
         })
@@ -115,10 +115,27 @@ def test_extract_unique_links_missing_keys():
 
 def test_extract_unique_links_no_href():
     results = [
-        MockResult(links={
+        MockCrawlResult(links={
             "internal": [{"text": "No href"}]
         })
     ]
 
     extracted = _extract_unique_links(results)
     assert len(extracted["internal"]) == 0
+
+def test_extract_unique_links_not_a_list():
+    results = [
+        MockCrawlResult(links={
+            "internal": "not a list",
+            "external": [{"href": "https://google.com"}]
+        })
+    ]
+
+    # The current implementation of _extract_unique_links:
+    # for link in result.links[k]:
+    # will raise TypeError if result.links[k] is not iterable (like a string, though a string IS iterable)
+    # but it will crash if it is e.g. an integer.
+    # Actually, if it's a string "not a list", it will iterate over characters and link.get('href') will fail.
+
+    with pytest.raises(Exception): # Exact exception depends on the type
+        _extract_unique_links(results)
