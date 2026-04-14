@@ -14,6 +14,16 @@ UI_ARTIFACTS_REGEX = re.compile(
     flags=re.MULTILINE
 )
 
+# Pre-compiled regex patterns for markdown cleaning
+EMPTY_HEADERS_REGEX = re.compile(r'#+\s*(?:\n|\r|\s)*\n')
+EXCESSIVE_NEWLINES_REGEX = re.compile(r'\n{3,}')
+CODE_BLOCK_REGEX = re.compile(r'```[\s\S]*?```')
+IMAGE_REGEX = re.compile(r'!\[[^\]]*\]\([^)]+\)')
+LINK_REGEX = re.compile(r'\[([^\]]+)\]\([^)]+\)')
+EMPTY_LINES_REGEX = re.compile(r'\n\s*\n')
+EXTRA_SPACES_REGEX = re.compile(r' {2,}')
+RESTORE_CODE_BLOCK_REGEX = re.compile(r'__CODE_BLOCK_(\d+)__')
+
 import click
 import uvicorn
 import mcp.types as types
@@ -141,10 +151,10 @@ def clean_ui_artifacts(text):
     # Remove empty markdown headers like "## "
     # We avoid using actual unicode escape characters in the python source text here
     # to avoid syntax errors in string literals.
-    text = re.sub(r'#+\s*(?:\n|\r|\s)*\n', '\n', text)
+    text = EMPTY_HEADERS_REGEX.sub('\n', text)
 
     # Clean up excessive newlines again
-    text = re.sub(r'\n{3,}', '\n\n', text)
+    text = EXCESSIVE_NEWLINES_REGEX.sub('\n\n', text)
     return text
 
 def remove_links_from_markdown(markdown_text):
@@ -161,29 +171,29 @@ def remove_links_from_markdown(markdown_text):
         return f"__CODE_BLOCK_{len(code_blocks)-1}__"
     
     # Identify code blocks (between ``` and ```) and replace them with placeholders
-    markdown_with_placeholders = re.sub(r'```[\s\S]*?```', save_code_block, markdown_text)
+    markdown_with_placeholders = CODE_BLOCK_REGEX.sub(save_code_block, markdown_text)
     
     # Completely remove images in ![text](url) format BEFORE links
-    text_without_images = re.sub(r'!\[[^\]]*\]\([^)]+\)', '', markdown_with_placeholders)
+    text_without_images = IMAGE_REGEX.sub('', markdown_with_placeholders)
 
     # Replace links in [text](url) format with just the text
-    text_without_links = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', text_without_images)
+    text_without_links = LINK_REGEX.sub(r'\1', text_without_images)
     
     # Clean UI artifacts
     text_cleaned = clean_ui_artifacts(text_without_links)
     
     # Remove lines containing only spaces
-    text_without_empty_lines = re.sub(r'\n\s*\n', '\n\n', text_cleaned)
+    text_without_empty_lines = EMPTY_LINES_REGEX.sub('\n\n', text_cleaned)
     
     # Remove blocks of consecutive spaces (but not in code blocks)
-    text_without_extra_spaces = re.sub(r' {2,}', ' ', text_without_empty_lines)
+    text_without_extra_spaces = EXTRA_SPACES_REGEX.sub(' ', text_without_empty_lines)
     
     # Put the code blocks back in place
     def restore_code_block(match):
         index = int(match.group(1))
         return code_blocks[index]
 
-    result = re.sub(r'__CODE_BLOCK_(\d+)__', restore_code_block, text_without_extra_spaces)
+    result = RESTORE_CODE_BLOCK_REGEX.sub(restore_code_block, text_without_extra_spaces)
     
     return result
 
