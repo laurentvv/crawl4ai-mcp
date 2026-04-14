@@ -253,6 +253,18 @@ async def crawl_and_output_to_markdown(start_url: str,
     if css_selector:
         config.css_selector = css_selector
     if js_code:
+        if os.getenv("CRAWL4AI_MCP_ALLOW_JS", "false").lower() != "true":
+            return {
+                "error": "Custom JavaScript execution is disabled for security reasons. To enable it, set the environment variable CRAWL4AI_MCP_ALLOW_JS=true",
+                "file_path": None,
+                "stats": {
+                    "successful_pages": 0,
+                    "failed_pages": 0,
+                    "not_found_pages": 0,
+                    "forbidden_pages": 0,
+                    "duration_seconds": 0
+                }
+            }
         config.js_code = js_code
     if session_id:
         config.session_id = session_id
@@ -581,7 +593,7 @@ async def list_tools() -> list[types.Tool]:
                     },
                     "js_code": {
                         "type": "string",
-                        "description": "Custom JavaScript code to execute on the page before extraction",
+                        "description": "Custom JavaScript code to execute on the page before extraction (Requires CRAWL4AI_MCP_ALLOW_JS=true environment variable)",
                     },
                     "session_id": {
                         "type": "string",
