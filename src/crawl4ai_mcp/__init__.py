@@ -8,6 +8,9 @@ from datetime import datetime
 
 import anyio
 
+# Environment variable to allow custom JavaScript execution
+CRAWL4AI_MCP_ALLOW_JS_ENV = "CRAWL4AI_MCP_ALLOW_JS"
+
 # Pre-compiled UI artifact regex
 UI_ARTIFACTS_REGEX = re.compile(
     r"(?i)^\s*(?:Skip to main content|Search\.\.\.|Ctrl K|Copy page|Was this page helpful\? YesNo|Powered by.*?Mintlify)\s*$",
@@ -253,9 +256,9 @@ async def crawl_and_output_to_markdown(start_url: str,
     if css_selector:
         config.css_selector = css_selector
     if js_code:
-        if os.getenv("CRAWL4AI_MCP_ALLOW_JS", "false").lower() != "true":
+        if os.getenv(CRAWL4AI_MCP_ALLOW_JS_ENV, "false").lower() != "true":
             return {
-                "error": "Custom JavaScript execution is disabled for security reasons. To enable it, set the environment variable CRAWL4AI_MCP_ALLOW_JS=true",
+                "error": f"Custom JavaScript execution is disabled for security reasons. To enable it, set the environment variable {CRAWL4AI_MCP_ALLOW_JS_ENV}=true",
                 "file_path": None,
                 "stats": {
                     "successful_pages": 0,
@@ -593,7 +596,7 @@ async def list_tools() -> list[types.Tool]:
                     },
                     "js_code": {
                         "type": "string",
-                        "description": "Custom JavaScript code to execute on the page before extraction (Requires CRAWL4AI_MCP_ALLOW_JS=true environment variable)",
+                        "description": f"Custom JavaScript code to execute on the page before extraction (Requires {CRAWL4AI_MCP_ALLOW_JS_ENV}=true environment variable)",
                     },
                     "session_id": {
                         "type": "string",
