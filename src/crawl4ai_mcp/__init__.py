@@ -228,7 +228,6 @@ async def crawl_and_output_to_markdown(start_url: str,
     results_dir = get_results_directory()
 
     # Generate a filename if not specified
-    results_dir = get_results_directory()
     if not output_file:
         # Use the project folder instead of the temporary folder
         output_file = os.path.join(results_dir, generate_filename_from_url(start_url))
