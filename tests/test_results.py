@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock
 from unittest.mock import patch
 import pytest
 import os
-from crawl4ai_mcp import results_to_markdown, _extract_page_content_and_errors, crawl_and_output_to_markdown
+from crawl4ai_mcp.crawler import results_to_markdown, _extract_page_content_and_errors, crawl_and_output_to_markdown
 
 class MockResult:
     def __init__(self, i, error_type=None):
@@ -86,7 +86,7 @@ async def test_results_to_markdown_exception():
         async def open(self, *args, **kwargs):
             raise PermissionError("Permission denied")
 
-    with patch("crawl4ai_mcp.anyio.Path", side_effect=MockPathOpen):
+    with patch("crawl4ai_mcp.crawler.anyio.Path", side_effect=MockPathOpen):
         res = await results_to_markdown(results, output_path)
 
         assert "error" in res
@@ -167,7 +167,7 @@ async def test_crawl_and_output_to_markdown_exception():
         async def arun(self, url, **kwargs):
             raise Exception("Simulated crawl error")
 
-    with patch("crawl4ai_mcp.AsyncWebCrawler", return_value=MockCrawlerContext()):
+    with patch("crawl4ai_mcp.crawler.AsyncWebCrawler", return_value=MockCrawlerContext()):
         result = await crawl_and_output_to_markdown("https://example.com")
 
         assert "error" in result
@@ -198,24 +198,25 @@ async def test_crawl_and_output_to_markdown_new_params():
 
     mock_crawler = MockCrawlerContext()
 
-    with patch("crawl4ai_mcp.AsyncWebCrawler", return_value=mock_crawler):
+    with patch("crawl4ai_mcp.crawler.AsyncWebCrawler", return_value=mock_crawler):
         # We need to mock anyio.Path.mkdir and results_to_markdown to avoid disk operations
-        with patch("anyio.Path.mkdir", new_callable=AsyncMock):
-            with patch("crawl4ai_mcp.results_to_markdown", new_callable=AsyncMock) as mock_results:
-                mock_results.return_value = {"file_path": "mocked.md", "stats": {}}
+        with patch.dict("os.environ", {"CRAWL4AI_MCP_ALLOW_JS": "true"}):
+            with patch("anyio.Path.mkdir", new_callable=AsyncMock):
+                with patch("crawl4ai_mcp.crawler.results_to_markdown", new_callable=AsyncMock) as mock_results:
+                    mock_results.return_value = {"file_path": "mocked.md", "stats": {}}
 
-                await crawl_and_output_to_markdown(
-                    "https://example.com",
-                    magic=True,
-                    css_selector=".main",
-                    js_code="console.log('test');",
-                    session_id="test_session",
-                    delay_before_return_html=2.5,
-                )
+                    await crawl_and_output_to_markdown(
+                        "https://example.com",
+                        magic=True,
+                        css_selector=".main",
+                        js_code="console.log('test');",
+                        session_id="test_session",
+                        delay_before_return_html=2.5,
+                    )
 
-                assert mock_crawler.captured_config is not None
-                assert mock_crawler.captured_config.magic is True
-                assert mock_crawler.captured_config.css_selector == ".main"
-                assert mock_crawler.captured_config.js_code == "console.log('test');"
-                assert mock_crawler.captured_config.session_id == "test_session"
-                assert mock_crawler.captured_config.delay_before_return_html == 2.5
+                    assert mock_crawler.captured_config is not None
+                    assert mock_crawler.captured_config.magic is True
+                    assert mock_crawler.captured_config.css_selector == ".main"
+                    assert mock_crawler.captured_config.js_code == "console.log('test');"
+                    assert mock_crawler.captured_config.session_id == "test_session"
+                    assert mock_crawler.captured_config.delay_before_return_html == 2.5

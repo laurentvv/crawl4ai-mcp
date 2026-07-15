@@ -5,6 +5,10 @@
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+<div align="center">
+  <img src="assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+</div>
+
 A powerful web crawling tool that integrates with AI assistants via the MCP (Model Context Protocol). This project allows AI assistants to crawl websites, extract dynamic content, navigate through links, and save structured Markdown files directly.
 
 ## 📋 Features
@@ -110,7 +114,17 @@ cd crawl4ai-mcp
 uv sync
 ```
 
-3. Run the MCP server directly:
+3. Test the MCP server locally using the official MCP Inspector:
+```bash
+npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
+```
+
+4. Run the automated test suite:
+```bash
+uv run pytest tests/
+```
+
+5. Run the MCP server directly (for standard usage):
 ```bash
 uv run crawl4ai-mcp
 ```

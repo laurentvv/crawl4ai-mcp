@@ -4,25 +4,11 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 # Mock out heavy dependencies that might not be available or fail to load
-sys.modules["anyio"] = MagicMock()
-sys.modules["click"] = MagicMock()
-sys.modules["mcp"] = MagicMock()
-sys.modules["mcp.types"] = MagicMock()
-sys.modules["mcp.server"] = MagicMock()
-sys.modules["mcp.server.lowlevel"] = MagicMock()
-sys.modules["mcp.server.sse"] = MagicMock()
-sys.modules["mcp.server.stdio"] = MagicMock()
-sys.modules["starlette.applications"] = MagicMock()
-sys.modules["starlette.routing"] = MagicMock()
-sys.modules["uvicorn"] = MagicMock()
 
-sys.modules["crawl4ai"] = MagicMock()
-sys.modules["crawl4ai.content_scraping_strategy"] = MagicMock()
-sys.modules["crawl4ai.deep_crawling"] = MagicMock()
 
 # Now we can import from our module safely
 sys.path.append(os.path.join(os.getcwd(), "src"))
-from crawl4ai_mcp import crawl_and_output_to_markdown
+from crawl4ai_mcp.crawler import crawl_and_output_to_markdown
 
 class TestSecurityJS(unittest.IsolatedAsyncioTestCase):
     async def test_js_code_blocked_by_default(self):
@@ -50,8 +36,8 @@ class TestSecurityJS(unittest.IsolatedAsyncioTestCase):
             self.assertIn("error", result)
             self.assertIn("Custom JavaScript execution is disabled", result["error"])
 
-    @patch("crawl4ai_mcp.AsyncWebCrawler")
-    @patch("crawl4ai_mcp.results_to_markdown")
+    @patch("crawl4ai_mcp.crawler.AsyncWebCrawler")
+    @patch("crawl4ai_mcp.crawler.results_to_markdown")
     async def test_js_code_allowed_when_env_set_to_true(self, mock_results_to_markdown, mock_crawler_class):
         with patch.dict(os.environ, {"CRAWL4AI_MCP_ALLOW_JS": "true"}):
             # Setup mocks for successful crawl

@@ -24,7 +24,7 @@ dev = [
 ]
 
 [project.scripts]
-crawl4ai-mcp = "crawl4ai_mcp:main"
+crawl4ai-mcp = "crawl4ai_mcp.cli:main"
 
 [tool.uv]
 package = true

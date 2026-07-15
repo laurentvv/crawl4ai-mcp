@@ -3,24 +3,11 @@ import sys
 from unittest.mock import MagicMock
 
 # Mock out heavy dependencies that might not be available or fail to load
-sys.modules["anyio"] = MagicMock()
-sys.modules["click"] = MagicMock()
-sys.modules["mcp"] = MagicMock()
-sys.modules["mcp.types"] = MagicMock()
-sys.modules["mcp.server"] = MagicMock()
-sys.modules["mcp.server.lowlevel"] = MagicMock()
-sys.modules["mcp.server.sse"] = MagicMock()
-sys.modules["mcp.server.stdio"] = MagicMock()
-sys.modules["starlette.applications"] = MagicMock()
-sys.modules["starlette.routing"] = MagicMock()
 
-sys.modules["crawl4ai"] = MagicMock()
-sys.modules["crawl4ai.content_scraping_strategy"] = MagicMock()
-sys.modules["crawl4ai.deep_crawling"] = MagicMock()
 
 # Now we can import from our module safely
 sys.path.append(os.path.join(os.getcwd(), "src"))
-from crawl4ai_mcp import is_safe_path
+from crawl4ai_mcp.utils import is_safe_path
 
 def test_is_safe_path():
     cwd = os.getcwd()

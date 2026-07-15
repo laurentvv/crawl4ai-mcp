@@ -2,24 +2,9 @@ import sys
 from unittest.mock import MagicMock
 
 # Mock dependencies
-sys.modules["anyio"] = MagicMock()
-sys.modules["click"] = MagicMock()
-sys.modules["uvicorn"] = MagicMock()
-sys.modules["mcp"] = MagicMock()
-sys.modules["mcp.types"] = MagicMock()
-sys.modules["mcp.server"] = MagicMock()
-sys.modules["mcp.server.lowlevel"] = MagicMock()
-sys.modules["mcp.server.sse"] = MagicMock()
-sys.modules["mcp.server.stdio"] = MagicMock()
-sys.modules["crawl4ai"] = MagicMock()
-sys.modules["crawl4ai.content_scraping_strategy"] = MagicMock()
-sys.modules["crawl4ai.deep_crawling"] = MagicMock()
-sys.modules["starlette"] = MagicMock()
-sys.modules["starlette.applications"] = MagicMock()
-sys.modules["starlette.routing"] = MagicMock()
 
 import pytest
-from crawl4ai_mcp import _extract_unique_links
+from crawl4ai_mcp.crawler import _extract_unique_links
 
 class MockCrawlResult:
     def __init__(self, links=None, has_links_attr=True):
