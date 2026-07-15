@@ -5,6 +5,10 @@
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+<div align="center">
+  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+</div>
+
 Un puissant outil de crawl Web qui s'intègre aux assistants IA via le MCP (Model Context Protocol). Ce projet permet aux assistants IA de parcourir des sites Web, d'extraire du contenu dynamique, de naviguer via des liens et d'enregistrer directement des fichiers Markdown structurés.
 
 ## 📋 Fonctionnalités
@@ -12,10 +16,15 @@ Un puissant outil de crawl Web qui s'intègre aux assistants IA via le MCP (Mode
 - Intégration native avec les assistants IA via MCP
 - Renvoie le contenu Markdown extrait directement à l'IA
 - Extrait et affiche les liens internes/externes pour la navigation de l'IA
-- Attend les sélecteurs CSS dynamiques avant l'extraction (support SPA)
 - Crawl de sites Web avec profondeur configurable
 - Statistiques détaillées des résultats du crawl
 - Gestion des erreurs et des pages non trouvées
+- **Capacités de scraping avancées** :
+  - **Mode Magique** : Contournez les anti-bots (comme Cloudflare) et simulez un vrai comportement de navigateur
+  - **Extraction ciblée** : Récupérez uniquement ce dont vous avez besoin avec les sélecteurs CSS
+  - **JavaScript personnalisé** : Exécutez du code avant l'extraction (clics, défilements, remplissage de formulaires)
+  - **Sessions persistantes** : Conservez les cookies et l'état de la session entre les requêtes pour les sites authentifiés
+  - **Support SPA** : Attendez les sélecteurs CSS dynamiques ou définissez des délais explicites avant l'extraction
 
 ## 🚀 Configuration MCP
 
@@ -68,6 +77,8 @@ Une fois configuré, vous pouvez utiliser le crawler en demandant à votre assis
 - **Crawl simple** : "Peux-tu crawler le site example.com et me donner un résumé ?"
 - **Crawl avec options** : "Peux-tu crawler https://example.com avec une profondeur de 3 et inclure les liens externes ?"
 - **Contenu dynamique** : "Crawle cette application React et attends que le sélecteur `.main-content` soit chargé."
+- **Contournement des protections** : "Crawle example.com mais utilise le 'mode magique' pour contourner la protection anti-bot."
+- **Extraction ciblée** : "Crawle le site de documentation mais n'extrais que le contenu correspondant au sélecteur CSS `h1, p.lead`."
 
 ## 🛠️ Paramètres disponibles (Outil MCP)
 
@@ -82,6 +93,11 @@ L'outil `crawl` accepte les paramètres suivants :
 | `wait_for_selector` | string | Sélecteur CSS à attendre avant d'extraire le contenu. Utile pour les applications monopages (SPA). | None |
 | `return_content` | boolean | S'il faut renvoyer le contenu extrait directement dans la réponse MCP (tronqué à 50k caractères si nécessaire). | true |
 | `output_file` | string | Chemin du fichier de sortie | généré automatiquement |
+| `magic` | boolean | Activer le mode magique pour contourner les anti-bots et simuler un vrai navigateur | false |
+| `css_selector` | string | Sélecteur CSS spécifique pour extraire uniquement les éléments ciblés de la page | None |
+| `js_code` | string | Code JavaScript personnalisé à exécuter sur la page avant l'extraction | None |
+| `session_id` | string | Identifiant de session persistant pour conserver les cookies et l'état du navigateur entre les requêtes | None |
+| `delay_before_return_html` | number | Délai en secondes à attendre avant d'extraire le HTML (utile pour les pages avec beaucoup de JS) | None |
 
 ## 👨‍💻 Développement
 
@@ -98,7 +114,17 @@ cd crawl4ai-mcp
 uv sync
 ```
 
-3. Lancez le serveur MCP directement :
+3. Testez le serveur MCP localement en utilisant l'inspecteur MCP officiel :
+```bash
+npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
+```
+
+4. Exécutez la suite de tests automatisés :
+```bash
+uv run pytest tests/
+```
+
+5. Lancez le serveur MCP directement (pour une utilisation standard) :
 ```bash
 uv run crawl4ai-mcp
 ```

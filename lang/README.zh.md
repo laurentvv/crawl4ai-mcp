@@ -5,6 +5,10 @@
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+<div align="center">
+  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+</div>
+
 一个强大的网络爬虫工具，通过 MCP（模型上下文协议）与 AI 助手集成。该项目允许 AI 助手抓取网站、提取动态内容、通过链接导航并直接保存结构化的 Markdown 文件。
 
 ## 📋 功能特点
@@ -12,10 +16,15 @@
 - 通过 MCP 与 AI 助手进行原生集成
 - 直接向 AI 返回抓取的 Markdown 内容
 - 提取并显示内部/外部链接，供 AI 导航
-- 在抓取前等待动态 CSS 选择器（支持 SPA）
 - 可配置深度的网站抓取
 - 详细的抓取结果统计
 - 错误和页面未找到处理
+- **高级抓取功能**：
+  - **魔法模式 (Magic Mode)**：绕过反机器人验证（如 Cloudflare）并模拟真实的浏览器行为
+  - **定向提取**：使用 CSS 选择器仅获取您需要的内容
+  - **自定义 JavaScript**：在提取之前执行代码（点击、滚动、表单填写）
+  - **持久化会话**：在已验证的网站上保持跨请求的 Cookie 和浏览器状态
+  - **单页面应用 (SPA) 支持**：等待动态 CSS 选择器或设置明确的提取前延迟
 
 ## 🚀 MCP 配置
 
@@ -68,6 +77,8 @@ uv run playwright install chromium
 - **简单抓取**：“你能抓取 example.com 网站并给我一个总结吗？”
 - **带选项的抓取**：“你能抓取 https://example.com，深度为 3 并包含外部链接吗？”
 - **动态内容**：“抓取这个 React 应用并等待 `.main-content` 选择器加载。”
+- **绕过保护**：“抓取 example.com，但使用‘魔法模式’以绕过反机器人保护。”
+- **定向提取**：“抓取文档网站，但仅提取与 `h1, p.lead` CSS 选择器匹配的内容。”
 
 ## 🛠️ 可用参数 (MCP 工具)
 
@@ -82,6 +93,11 @@ uv run playwright install chromium
 | `wait_for_selector` | string | 提取内容前等待的 CSS 选择器。适用于单页面应用 (SPA)。 | None |
 | `return_content` | boolean | 是否直接在 MCP 响应中返回提取的内容（必要时截断至 50k 字符）。 | true |
 | `output_file` | string | 输出文件路径 | 自动生成 |
+| `magic` | boolean | 启用魔法模式以绕过反机器人验证并模拟真实的浏览器 | false |
+| `css_selector` | string | 特定的 CSS 选择器，仅提取页面中的目标元素 | None |
+| `js_code` | string | 提取之前在页面上执行的自定义 JavaScript 代码 | None |
+| `session_id` | string | 持久化会话标识符，用于在多个请求间保留 Cookie 和浏览器状态 | None |
+| `delay_before_return_html` | number | 提取 HTML 前等待的延迟时间（秒）（适用于重度 JS 的页面） | None |
 
 ## 👨‍💻 开发
 
@@ -98,7 +114,17 @@ cd crawl4ai-mcp
 uv sync
 ```
 
-3. 直接运行 MCP 服务器：
+3. 使用官方的 MCP Inspector 在本地测试 MCP 服务器：
+```bash
+npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
+```
+
+4. 运行自动化测试套件：
+```bash
+uv run pytest tests/
+```
+
+5. 直接运行 MCP 服务器（用于标准用途）：
 ```bash
 uv run crawl4ai-mcp
 ```

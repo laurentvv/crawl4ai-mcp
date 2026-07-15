@@ -5,6 +5,10 @@
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+<div align="center">
+  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+</div>
+
 Alat perayapan web (web crawling) canggih yang terintegrasi dengan asisten AI melalui MCP (Model Context Protocol). Proyek ini memungkinkan asisten AI untuk merayapi situs web, mengekstrak konten dinamis, menavigasi melalui tautan, dan menyimpan file Markdown terstruktur secara langsung.
 
 ## 📋 Fitur
@@ -12,10 +16,15 @@ Alat perayapan web (web crawling) canggih yang terintegrasi dengan asisten AI me
 - Integrasi asli dengan asisten AI melalui MCP
 - Mengembalikan konten Markdown hasil scraping langsung ke AI
 - Mengekstrak dan menampilkan tautan internal/eksternal untuk navigasi AI
-- Menunggu pemilih (selector) CSS dinamis sebelum scraping (dukungan SPA)
 - Perayapan situs web dengan kedalaman yang dapat dikonfigurasi
 - Statistik hasil perayapan yang mendalam
 - Penanganan kesalahan dan halaman tidak ditemukan
+- **Kemampuan Scraping Lanjutan**:
+  - **Mode Ajaib (Magic Mode)**: Melewati anti-bot (seperti Cloudflare) dan mensimulasikan perilaku browser yang sebenarnya
+  - **Ekstraksi Tertarget (Targeted Extraction)**: Ambil hanya yang Anda butuhkan menggunakan pemilih (selector) CSS
+  - **JavaScript Kustom**: Jalankan kode sebelum ekstraksi (klik, gulir, isi formulir)
+  - **Sesi Persisten**: Simpan cookie dan status di seluruh permintaan untuk situs yang diautentikasi
+  - **Dukungan SPA**: Tunggu pemilih CSS dinamis atau atur penundaan pra-ekstraksi secara eksplisit
 
 ## 🚀 Konfigurasi MCP
 
@@ -68,6 +77,8 @@ Setelah dikonfigurasi, Anda dapat menggunakan perayap dengan meminta asisten AI 
 - **Perayapan Sederhana**: "Bisakah kamu merayapi situs example.com dan memberi saya ringkasannya?"
 - **Perayapan dengan Opsi**: "Bisakah kamu merayapi https://example.com dengan kedalaman 3 dan sertakan tautan eksternal?"
 - **Konten Dinamis**: "Rayapi aplikasi React ini dan tunggu pemilih `.main-content` dimuat."
+- **Bypass Proteksi**: "Rayapi example.com tetapi gunakan 'mode ajaib' (magic mode) untuk melewati perlindungan anti-bot."
+- **Ekstraksi Tertarget**: "Rayapi situs docs tetapi ekstrak hanya konten yang cocok dengan pemilih CSS `h1, p.lead`."
 
 ## 🛠️ Parameter yang Tersedia (Alat MCP)
 
@@ -82,6 +93,11 @@ Alat `crawl` menerima parameter berikut:
 | `wait_for_selector` | string | Pemilih CSS untuk ditunggu sebelum mengekstrak konten. Berguna untuk aplikasi satu halaman (SPA). | None |
 | `return_content` | boolean | Apakah akan mengembalikan konten yang diekstrak langsung dalam respons MCP (dipotong menjadi 50rb karakter jika perlu). | true |
 | `output_file` | string | Jalur file output | dibuat secara otomatis |
+| `magic` | boolean | Aktifkan mode ajaib untuk melewati anti-bot dan mensimulasikan browser sebenarnya | false |
+| `css_selector` | string | Pemilih CSS spesifik untuk mengekstrak hanya elemen yang ditargetkan dari halaman | None |
+| `js_code` | string | Kode JavaScript kustom untuk dijalankan pada halaman sebelum ekstraksi | None |
+| `session_id` | string | Pengidentifikasi sesi persisten untuk menyimpan cookie dan status browser di seluruh permintaan | None |
+| `delay_before_return_html` | number | Penundaan dalam detik untuk menunggu sebelum mengekstrak HTML (berguna untuk halaman JS yang berat) | None |
 
 ## 👨‍💻 Pengembangan
 
@@ -98,7 +114,17 @@ cd crawl4ai-mcp
 uv sync
 ```
 
-3. Jalankan server MCP secara langsung:
+3. Uji server MCP secara lokal menggunakan MCP Inspector resmi:
+```bash
+npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
+```
+
+4. Jalankan suite pengujian otomatis:
+```bash
+uv run pytest tests/
+```
+
+5. Jalankan server MCP secara langsung (untuk penggunaan standar):
 ```bash
 uv run crawl4ai-mcp
 ```

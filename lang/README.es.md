@@ -5,6 +5,10 @@
 ![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
+<div align="center">
+  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+</div>
+
 Una potente herramienta de rastreo web que se integra con asistentes de IA a través del MCP (Model Context Protocol). Este proyecto permite a los asistentes de IA rastrear sitios web, extraer contenido dinámico, navegar a través de enlaces y guardar archivos Markdown estructurados directamente.
 
 ## 📋 Características
@@ -12,10 +16,15 @@ Una potente herramienta de rastreo web que se integra con asistentes de IA a tra
 - Integración nativa con asistentes de IA a través de MCP
 - Devuelve el contenido Markdown extraído directamente a la IA
 - Extrae y muestra enlaces internos/externos para la navegación de la IA
-- Espera a selectores CSS dinámicos antes de extraer (soporte para SPA)
 - Rastreo de sitios web con profundidad configurable
 - Estadísticas detalladas de los resultados del rastreo
 - Manejo de errores y páginas no encontradas
+- **Capacidades Avanzadas de Rastreo**:
+  - **Modo Mágico**: Elude anti-bots (como Cloudflare) y simula el comportamiento de un navegador real
+  - **Extracción Dirigida**: Obtén solo lo que necesitas usando selectores CSS
+  - **JavaScript Personalizado**: Ejecuta código antes de la extracción (clics, desplazamientos, llenado de formularios)
+  - **Sesiones Persistentes**: Mantén cookies y estado entre solicitudes para sitios autenticados
+  - **Soporte para SPA**: Espera a selectores CSS dinámicos o establece retrasos explícitos antes de la extracción
 
 ## 🚀 Configuración de MCP
 
@@ -68,6 +77,8 @@ Una vez configurado, puede usar el rastreador pidiendo a su asistente de IA que 
 - **Rastreo simple**: "¿Puedes rastrear el sitio example.com y darme un resumen?"
 - **Rastreo con opciones**: "¿Puedes rastrear https://example.com con una profundidad de 3 e incluir enlaces externos?"
 - **Contenido dinámico**: "Rastrea esta aplicación React y espera a que se cargue el selector `.main-content`."
+- **Eludir protecciones**: "Rastrea example.com pero usa el 'modo mágico' para eludir la protección anti-bot."
+- **Extracción dirigida**: "Rastrea el sitio de documentación pero solo extrae el contenido que coincida con el selector CSS `h1, p.lead`."
 
 ## 🛠️ Parámetros disponibles (Herramienta MCP)
 
@@ -82,6 +93,11 @@ La herramienta `crawl` acepta los siguientes parámetros:
 | `wait_for_selector` | string | Selector CSS a esperar antes de extraer el contenido. Útil para aplicaciones de una sola página (SPA). | None |
 | `return_content` | boolean | Si se debe devolver el contenido extraído directamente en la respuesta MCP (truncado a 50k caracteres si es necesario). | true |
 | `output_file` | string | Ruta del archivo de salida | generado automáticamente |
+| `magic` | boolean | Habilita el modo mágico para eludir anti-bots y simular un navegador real | false |
+| `css_selector` | string | Selector CSS específico para extraer solo elementos dirigidos de la página | None |
+| `js_code` | string | Código JavaScript personalizado para ejecutar en la página antes de la extracción | None |
+| `session_id` | string | Identificador de sesión persistente para mantener cookies y estado del navegador entre solicitudes | None |
+| `delay_before_return_html` | number | Retraso en segundos a esperar antes de extraer el HTML (útil para páginas JS pesadas) | None |
 
 ## 👨‍💻 Desarrollo
 
@@ -98,7 +114,17 @@ cd crawl4ai-mcp
 uv sync
 ```
 
-3. Ejecute el servidor MCP directamente:
+3. Pruebe el servidor MCP localmente usando el MCP Inspector oficial:
+```bash
+npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
+```
+
+4. Ejecute el conjunto de pruebas automatizadas:
+```bash
+uv run pytest tests/
+```
+
+5. Ejecute el servidor MCP directamente (para uso estándar):
 ```bash
 uv run crawl4ai-mcp
 ```
