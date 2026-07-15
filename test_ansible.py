@@ -1,5 +1,5 @@
 import asyncio
-from crawl4ai_mcp import crawl_and_output_to_markdown
+from crawl4ai_mcp.crawler import crawl_and_output_to_markdown
 
 async def main():
     print("Testing crawl of docs.ansible.com")

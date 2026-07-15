@@ -390,7 +390,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "anyio", specifier = ">=4.12.1" },
-    { name = "chardet", specifier = "==5.2.0" },
+    { name = "chardet", specifier = ">=5.2.0" },
     { name = "click", specifier = ">=8.3.1" },
     { name = "crawl4ai", specifier = ">=0.8.5" },
     { name = "httpx", specifier = ">=0.28.1" },
@@ -398,7 +398,7 @@ requires-dist = [
     { name = "mcp", specifier = ">=1.26.0" },
     { name = "playwright", specifier = ">=1.58.0" },
     { name = "starlette", specifier = ">=1.0.0" },
-    { name = "urllib3", specifier = "==1.26.15" },
+    { name = "urllib3", specifier = ">=1.26.15" },
     { name = "uvicorn", specifier = ">=0.42.0" },
 ]
 

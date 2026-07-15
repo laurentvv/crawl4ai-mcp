@@ -20,7 +20,7 @@ CRAWL4AI_MCP_ALLOW_JS_ENV = "CRAWL4AI_MCP_ALLOW_JS"
 
 async def crawl_and_output_to_markdown(
     start_url: str,
-    max_depth: int = 5,
+    max_depth: int = 2,
     include_external: bool = False,
     verbose: bool = True,
     output_file: str = None,
@@ -124,8 +124,15 @@ def _extract_page_content_and_errors(result) -> tuple[str | None, str | None]:
     text_for_output = getattr(result, "markdown", None) or getattr(result, "text", None)
     if not text_for_output:
         return None, "missing"
+        
+    status_code = getattr(result, "status_code", None)
+    if status_code:
+        if status_code == 404:
+            return text_for_output, "404"
+        elif status_code in (401, 403):
+            return text_for_output, "403"
 
-    # Check if it's an error page (404 or 403)
+    # Fallback: Check if it's an error page (404 or 403)
     if ("404 Not Found" in text_for_output or "403 Forbidden" in text_for_output) and "nginx" in text_for_output:
         error_type = "404" if "404 Not Found" in text_for_output else "403"
         return text_for_output, error_type
