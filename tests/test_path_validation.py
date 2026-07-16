@@ -1,6 +1,5 @@
 import os
 import sys
-from unittest.mock import MagicMock
 
 # Mock out heavy dependencies that might not be available or fail to load
 

@@ -1,5 +1,4 @@
 import unittest
-from unittest.mock import MagicMock
 import sys
 
 # Local mock of dependencies for importing the module under test

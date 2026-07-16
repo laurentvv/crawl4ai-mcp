@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
 import os
-import sys
 
 # Mocking all external dependencies to avoid ModuleNotFoundError
 mock_mcp = MagicMock()
