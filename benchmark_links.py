@@ -1,4 +1,3 @@
-import time
 import re
 
 # Mock clean_ui_artifacts for benchmark
@@ -29,7 +28,8 @@ def remove_links_original(markdown_text):
 def remove_links_optimized_split(markdown_text):
     parts = re.split(r'(```[\s\S]*?```)', markdown_text)
     for i in range(0, len(parts), 2):
-        if not parts[i]: continue
+        if not parts[i]:
+            continue
         part = re.sub(r'!\[[^\]]*\]\([^)]+\)', '', parts[i])
         part = re.sub(r'\[([^\]]+)\]\([^)]+\)', r'\1', part)
         part = clean_ui_artifacts(part)

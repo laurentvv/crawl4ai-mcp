@@ -1,5 +1,4 @@
 import os
-import re
 
 TEST_DIR = 'tests'
 
@@ -32,7 +31,6 @@ def patch_file(filepath):
 
     # Find all "from crawl4ai_mcp import X, Y" or "from crawl4ai_mcp.__init__ import X"
     def replacer(match):
-        base_pkg = match.group(1)
         imports = match.group(2).split(',')
         imports = [i.strip() for i in imports]
         
@@ -53,8 +51,6 @@ def patch_file(filepath):
 
     # regex for "from crawl4ai_mcp import A, B"
     # or "from crawl4ai_mcp.__init__ import A"
-    pattern = re.compile(r'^from\s+(crawl4ai_mcp(?:\[\.__init__\])?)\s+import\s+((?:[a-zA-Z0-9_,\s]+|(?:\(.*?\))))', re.MULTILINE)
-    
     # Actually, let's just do a simpler search/replace because imports might be multi-line
     # Let's do a naive parse
     lines = content.split('\n')
@@ -76,7 +72,8 @@ def patch_file(filepath):
             
             new_imports = {}
             for name in names:
-                if not name: continue
+                if not name:
+                    continue
                 base_name = name.split(' as ')[0].strip()
                 mod = MAPPING.get(base_name, 'crawl4ai_mcp.utils')
                 if mod not in new_imports:

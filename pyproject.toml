@@ -3,7 +3,7 @@ name = "crawl4ai-mcp"
 version = "0.1.0"
 description = "A Model Context Protocol (MCP) server for Crawl4AI"
 readme = "README.md"
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.13,<3.14"
 dependencies = [
     "anyio>=4.12.1",
     "chardet>=5.2.0",

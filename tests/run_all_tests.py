@@ -1,10 +1,8 @@
 import unittest
 import sys
 import os
-from unittest.mock import MagicMock
 
-
-
+if __name__ == '__main__':
     # Ensure src is in path
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
