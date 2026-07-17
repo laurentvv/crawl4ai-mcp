@@ -131,12 +131,10 @@ async def list_tools() -> list[types.Tool]:
                     "output_file": {
                         "type": "string",
                         "description": "Path to output file (generated if not provided)",
-                        "default": None,
                     },
                     "wait_for_selector": {
                         "type": "string",
                         "description": "CSS selector to wait for before extracting content. Useful for single-page applications.",
-                        "default": None,
                     },
                     "return_content": {
                         "type": "boolean",
