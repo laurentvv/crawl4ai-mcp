@@ -2,7 +2,7 @@
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
 
-![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 <div align="center">
@@ -38,7 +38,7 @@
 
 আপনার এআই অ্যাসিস্ট্যান্টের MCP কনফিগারেশন ফাইলে (যেমন `cline_mcp_settings.json` বা `claude_desktop_config.json`) নিচের অংশটি যোগ করুন:
 
-> **উইন্ডোজ ব্যবহারকারীদের জন্য নোট**: নির্দিষ্ট ডিপেন্ডেন্সিগুলোর সাথে কম্পাইলেশন সমস্যা এড়াতে `--python 3.12` উল্লেখ করার জন্য দৃঢ়ভাবে সুপারিশ করা হচ্ছে।
+> **উইন্ডোজ ব্যবহারকারীদের জন্য নোট**: নির্দিষ্ট ডিপেন্ডেন্সিগুলোর সাথে কম্পাইলেশন সমস্যা এড়াতে `--python 3.13` উল্লেখ করার জন্য দৃঢ়ভাবে সুপারিশ করা হচ্ছে।
 
 ```json
 {
@@ -47,7 +47,7 @@
       "command": "uvx",
       "args": [
         "--python",
-        "3.12",
+        "3.13",
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"

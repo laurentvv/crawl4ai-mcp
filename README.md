@@ -2,7 +2,7 @@
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](lang/README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](lang/README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](lang/README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](lang/README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](lang/README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](lang/README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](lang/README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](lang/README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](lang/README.id.md)
 
-![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 <div align="center">
@@ -38,7 +38,7 @@ The simplest and recommended way to use this tool is via `uvx`, which automatica
 
 Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mcp_settings.json` or `claude_desktop_config.json`):
 
-> **Note for Windows Users**: It is highly recommended to specify `--python 3.12` to avoid compilation issues with certain dependencies.
+> **Note for Windows Users**: It is highly recommended to specify `--python 3.13` to avoid compilation issues with certain dependencies.
 
 ```json
 {
@@ -47,7 +47,7 @@ Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mc
       "command": "uvx",
       "args": [
         "--python",
-        "3.12",
+        "3.13",
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"

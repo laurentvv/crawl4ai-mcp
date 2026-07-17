@@ -2,7 +2,7 @@
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
 
-![Python](https://img.shields.io/badge/Python-3.12%2B-blue)
+![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 <div align="center">
@@ -38,7 +38,7 @@
 
 将以下内容添加到 AI 助手的 MCP 配置文件中（例如 `cline_mcp_settings.json` 或 `claude_desktop_config.json`）：
 
-> **Windows 用户注意**：强烈建议指定 `--python 3.12`，以避免某些依赖项的编译问题。
+> **Windows 用户注意**：强烈建议指定 `--python 3.13`，以避免某些依赖项的编译问题。
 
 ```json
 {
@@ -47,7 +47,7 @@
       "command": "uvx",
       "args": [
         "--python",
-        "3.12",
+        "3.13",
         "--from",
         "git+https://github.com/laurentvv/crawl4ai-mcp",
         "crawl4ai-mcp"
