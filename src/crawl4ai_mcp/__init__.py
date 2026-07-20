@@ -27,6 +27,10 @@ EMPTY_LINES_REGEX = re.compile(r'\n\s*\n')
 EXTRA_SPACES_REGEX = re.compile(r' {2,}')
 RESTORE_CODE_BLOCK_REGEX = re.compile(r'__CODE_BLOCK_(\d+)__')
 
+# Pre-compiled regex patterns for page error detection
+ERROR_INDICATORS_REGEX = re.compile(r"404|403|Not Found|Forbidden")
+NOT_FOUND_INDICATORS_REGEX = re.compile(r"404|Not Found")
+
 import click
 import uvicorn
 import mcp.types as types
@@ -325,9 +329,8 @@ def _extract_page_content_and_errors(result) -> tuple[str | None, str | None]:
 
     # Check metadata title for error indicators
     title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") and result.metadata and result.metadata.get("title") is not None else "Untitled page"
-    error_indicators = ["404", "403", "Not Found", "Forbidden"]
-    if title and any(indicator in str(title) for indicator in error_indicators):
-        error_type = "404" if "404" in str(title) or "Not Found" in str(title) else "403"
+    if title and ERROR_INDICATORS_REGEX.search(str(title)):
+        error_type = "404" if NOT_FOUND_INDICATORS_REGEX.search(str(title)) else "403"
         # We still want to use the text but note it's an error
         return text_for_output, error_type
 
@@ -415,9 +418,8 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
                 elif error_type in ("404", "403"):
                     # For title errors, original code prints slightly differently
                     title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") and result.metadata and result.metadata.get("title") is not None else "Untitled page"
-                    error_indicators = ["404", "403", "Not Found", "Forbidden"]
                     
-                    if title and any(indicator in str(title) for indicator in error_indicators):
+                    if title and ERROR_INDICATORS_REGEX.search(str(title)):
                         print(f"Page with error title detected and skipped: {result.url}")
                     else:
                         print(f"{error_type} page detected and skipped: {result.url}")
