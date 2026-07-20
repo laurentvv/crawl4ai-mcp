@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import traceback
 from datetime import datetime
@@ -17,6 +18,9 @@ from .utils import (
 
 # Environment variable to allow custom JavaScript execution
 CRAWL4AI_MCP_ALLOW_JS_ENV = "CRAWL4AI_MCP_ALLOW_JS"
+
+# Pre-compiled regex for performance optimization
+ERROR_INDICATORS_REGEX = re.compile(r"404|403|Not Found|Forbidden")
 
 async def crawl_and_output_to_markdown(
     start_url: str,
@@ -139,8 +143,7 @@ def _extract_page_content_and_errors(result) -> tuple[str | None, str | None]:
 
     # Check metadata title for error indicators
     title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") and result.metadata and result.metadata.get("title") is not None else "Untitled page"
-    error_indicators = ["404", "403", "Not Found", "Forbidden"]
-    if title and any(indicator in str(title) for indicator in error_indicators):
+    if title and ERROR_INDICATORS_REGEX.search(str(title)):
         error_type = "404" if "404" in str(title) or "Not Found" in str(title) else "403"
         # We still want to use the text but note it's an error
         return text_for_output, error_type
@@ -222,9 +225,7 @@ async def results_to_markdown(results: list, output_path: str) -> dict:
                 elif error_type in ("404", "403"):
                     # For title errors, original code prints slightly differently
                     title = result.metadata.get("title", "Untitled page") if hasattr(result, "metadata") and result.metadata and result.metadata.get("title") is not None else "Untitled page"
-                    error_indicators = ["404", "403", "Not Found", "Forbidden"]
-                    
-                    if title and any(indicator in str(title) for indicator in error_indicators):
+                    if title and ERROR_INDICATORS_REGEX.search(str(title)):
                         print(f"Page with error title detected and skipped: {result.url}")
                     else:
                         print(f"{error_type} page detected and skipped: {result.url}")
