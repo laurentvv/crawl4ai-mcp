@@ -84,7 +84,7 @@ def get_results_directory():
     if env_dir:
         results_dir = os.path.abspath(env_dir)
     else:
-        results_dir = os.path.expanduser("~/.crawl4ai_mcp/results")
+        results_dir = os.path.expanduser("~/.crawl4ai_mcp_llm/results")
 
     # Create the folder if it doesn't exist
     if not os.path.exists(results_dir):

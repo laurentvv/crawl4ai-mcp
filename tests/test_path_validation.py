@@ -6,7 +6,7 @@ import sys
 
 # Now we can import from our module safely
 sys.path.append(os.path.join(os.getcwd(), "src"))
-from crawl4ai_mcp.utils import is_safe_path
+from crawl4ai_mcp_llm.utils import is_safe_path
 
 def test_is_safe_path():
     cwd = os.getcwd()

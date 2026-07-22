@@ -2,7 +2,7 @@
 # Mock dependencies
 
 import pytest
-from crawl4ai_mcp.crawler import _extract_unique_links
+from crawl4ai_mcp_llm.crawler import _extract_unique_links
 
 class MockCrawlResult:
     def __init__(self, links=None, has_links_attr=True):

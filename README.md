@@ -49,8 +49,8 @@ Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mc
         "--python",
         "3.13",
         "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
+        "git+https://github.com/laurentvv/crawl4ai-mcp-llm",
+        "crawl4ai-mcp-llm"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -105,8 +105,8 @@ If you want to modify the crawler or run it locally:
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
+git clone https://github.com/laurentvv/crawl4ai-mcp-llm
+cd crawl4ai-mcp-llm
 ```
 
 2. Install dependencies using `uv`:
@@ -116,7 +116,7 @@ uv sync
 
 3. Test the MCP server locally using the official MCP Inspector:
 ```bash
-npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
+npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp-llm
 ```
 
 4. Run the automated test suite:
@@ -126,7 +126,7 @@ uv run pytest tests/
 
 5. Run the MCP server directly (for standard usage):
 ```bash
-uv run crawl4ai-mcp
+uv run crawl4ai-mcp-llm
 ```
 
 ## 🤝 Contribution

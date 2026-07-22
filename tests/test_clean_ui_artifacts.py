@@ -8,7 +8,7 @@ import sys
 if "src" not in sys.path:
     sys.path.insert(0, "src")
 
-from crawl4ai_mcp.utils import clean_ui_artifacts
+from crawl4ai_mcp_llm.utils import clean_ui_artifacts
 
 class TestCleanUIArtifacts(unittest.TestCase):
     """

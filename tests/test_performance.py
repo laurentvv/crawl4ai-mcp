@@ -26,7 +26,7 @@ def remove_links_original(markdown_text):
 
     return result
 
-from crawl4ai_mcp.utils import remove_links_from_markdown as remove_links_optimized
+from crawl4ai_mcp_llm.utils import remove_links_from_markdown as remove_links_optimized
 
 def test_performance_improvement():
     # Generate test data

@@ -1,6 +1,6 @@
 import pytest
 import os
-from crawl4ai_mcp.crawler import crawl_and_output_to_markdown
+from crawl4ai_mcp_llm.crawler import crawl_and_output_to_markdown
 
 @pytest.mark.anyio
 @pytest.mark.integration

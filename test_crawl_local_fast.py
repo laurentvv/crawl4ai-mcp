@@ -1,6 +1,6 @@
 import pytest
 import asyncio
-from crawl4ai_mcp.server import crawl_tool
+from crawl4ai_mcp_llm.server import crawl_tool
 
 @pytest.mark.anyio
 async def test_ansible_docs():
