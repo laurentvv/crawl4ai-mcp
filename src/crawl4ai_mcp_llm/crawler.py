@@ -19,8 +19,24 @@ from .utils import (
 # Environment variable to allow custom JavaScript execution
 CRAWL4AI_MCP_ALLOW_JS_ENV = "CRAWL4AI_MCP_ALLOW_JS"
 
-# Pre-compiled regex for performance optimization
-ERROR_INDICATORS_REGEX = re.compile(r"404|403|Not Found|Forbidden")
+# Pre-compiled regex for performance optimization.
+# Anchored to full title to avoid false positives on legitimate content
+# (e.g. an article titled "Understanding HTTP 404 errors").
+ERROR_INDICATORS_REGEX = re.compile(
+    r"^(?:.*\s)?(?:404\s*[-:]?\s*not found|403\s*[-:]?\s*forbidden|not found|forbidden)(?:\s.*)?$",
+    re.IGNORECASE,
+)
+
+
+def _empty_stats() -> dict:
+    """Return a fresh empty stats dict (avoid duplication across error paths)."""
+    return {
+        "successful_pages": 0,
+        "failed_pages": 0,
+        "not_found_pages": 0,
+        "forbidden_pages": 0,
+        "duration_seconds": 0,
+    }
 
 async def crawl_and_output_to_markdown(
     start_url: str,
@@ -38,6 +54,23 @@ async def crawl_and_output_to_markdown(
     """
     Crawl a website and save the results to a file
     """
+    # Validate max_depth: 0 is ambiguous with BFSDeepCrawlStrategy and could
+    # lead to unexpected crawling behavior. Enforce a minimum of 1 (single page).
+    try:
+        max_depth = int(max_depth)
+    except (TypeError, ValueError):
+        return {
+            "error": f"max_depth must be an integer, got: {max_depth!r}",
+            "file_path": None,
+            "stats": _empty_stats(),
+        }
+    if max_depth < 1:
+        return {
+            "error": f"max_depth must be >= 1 (got {max_depth}). Use 1 for a single page.",
+            "file_path": None,
+            "stats": _empty_stats(),
+        }
+
     results_dir = get_results_directory()
 
     # Generate a filename if not specified
@@ -52,13 +85,7 @@ async def crawl_and_output_to_markdown(
             return {
                 "error": f"Invalid output path: {output_file}. Paths must be within {results_dir}",
                 "file_path": None,
-                "stats": {
-                    "successful_pages": 0,
-                    "failed_pages": 0,
-                    "not_found_pages": 0,
-                    "forbidden_pages": 0,
-                    "duration_seconds": 0
-                }
+                "stats": _empty_stats(),
             }
 
     # Set basic configuration
@@ -81,13 +108,7 @@ async def crawl_and_output_to_markdown(
             return {
                 "error": f"Custom JavaScript execution is disabled for security reasons. To enable it, set the environment variable {CRAWL4AI_MCP_ALLOW_JS_ENV}=true",
                 "file_path": None,
-                "stats": {
-                    "successful_pages": 0,
-                    "failed_pages": 0,
-                    "not_found_pages": 0,
-                    "forbidden_pages": 0,
-                    "duration_seconds": 0
-                }
+                "stats": _empty_stats(),
             }
         config.js_code = js_code
     if session_id:
@@ -111,13 +132,7 @@ async def crawl_and_output_to_markdown(
         return {
             "error": f"Crawling error: {str(e)}",
             "file_path": None,
-            "stats": {
-                "successful_pages": 0,
-                "failed_pages": 0,
-                "not_found_pages": 0,
-                "forbidden_pages": 0,
-                "duration_seconds": 0
-            }
+            "stats": _empty_stats(),
         }
 
 def _extract_page_content_and_errors(result) -> tuple[str | None, str | None]:

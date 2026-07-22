@@ -36,10 +36,14 @@ UNICODE_REPLACEMENTS = {
     "\u00a0": " ",   # Non-breaking space   becomes normal space
 }
 
-def sanitize_text(text):
+def sanitize_for_display(text):
     """
-    Sanitize the input text by replacing known problematic characters with their
-    ASCII equivalents and removing any other non-ASCII characters.
+    Sanitize text for safe display in MCP responses (e.g. error messages).
+    Replaces known problematic Unicode characters with their ASCII equivalents
+    and strips remaining non-ASCII bytes.
+
+    NOTE: Do NOT use this on crawled page content — it intentionally destroys
+    typographic Unicode (quotes, dashes, bullets) to keep MCP output safe.
     """
     if text is None:
         return ""

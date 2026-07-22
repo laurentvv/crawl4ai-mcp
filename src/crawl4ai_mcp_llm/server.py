@@ -5,7 +5,7 @@ import mcp.types as types
 from mcp.server.lowlevel import Server
 
 from .crawler import crawl_and_output_to_markdown, CRAWL4AI_MCP_ALLOW_JS_ENV
-from .utils import sanitize_text
+from .utils import sanitize_for_display
 
 app = Server("mcp-web-crawler")
 
@@ -29,6 +29,27 @@ async def crawl_tool(
     js_code = arguments.get("js_code", None)
     session_id = arguments.get("session_id", None)
     delay_before_return_html = arguments.get("delay_before_return_html", None)
+
+    # Runtime type coercion: MCP clients (LLMs) may send strings instead of
+    # the declared JSON-schema types. Cast defensively to avoid cryptic
+    # failures deep in crawl4ai.
+    try:
+        max_depth = int(max_depth)
+    except (TypeError, ValueError):
+        raise ValueError(
+            f"max_depth must be an integer, got: {max_depth!r}"
+        )
+    include_external = bool(include_external)
+    verbose = bool(verbose)
+    return_content = bool(return_content)
+    magic = bool(magic)
+    if delay_before_return_html is not None:
+        try:
+            delay_before_return_html = float(delay_before_return_html)
+        except (TypeError, ValueError):
+            raise ValueError(
+                f"delay_before_return_html must be a number, got: {delay_before_return_html!r}"
+            )
 
     try:
         result = await crawl_and_output_to_markdown(
@@ -96,7 +117,7 @@ You can view the full results in the file: {file_path}
         print(f"Error in crawl_tool: {e}", file=sys.stderr)
         print(traceback.format_exc(), file=sys.stderr)
         return [
-            types.TextContent(type="text", text=f"Error: {sanitize_text(str(e))}")
+            types.TextContent(type="text", text=f"Error: {sanitize_for_display(str(e))}")
         ]
 
 @app.list_tools()
