@@ -1,0 +1,46 @@
+<svg width="800" height="280" viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="60"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#050505"/>
+  
+  <!-- Subtle glowing orange orb left -->
+  <circle cx="200" cy="50" r="150" fill="#ea580c" opacity="0.15" filter="url(#blur)"/>
+  <!-- Subtle glowing amber orb right -->
+  <circle cx="600" cy="230" r="150" fill="#d97706" opacity="0.15" filter="url(#blur)"/>
+
+  <!-- Grid pattern -->
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+
+  <!-- Logo / Icon -->
+  <g transform="translate(384, 50)">
+    <rect width="32" height="32" rx="6" fill="#f97316"/>
+    <!-- terminal icon -->
+    <path d="M12 22 L20 16 L12 10 M6 10 L2 16 L6 22" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Title -->
+  <text x="400" y="130" font-family="system-ui, -apple-system, sans-serif" font-size="38" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="-0.5">
+    CRAWL4AI <tspan fill="#737373" font-weight="500" font-size="28">[MCP SERVER]</tspan>
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="400" y="175" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="500" fill="#d4d4d4" text-anchor="middle" letter-spacing="-0.2">
+    Give your AI the power to <tspan fill="#f97316" font-weight="700">surf the web.</tspan>
+  </text>
+  
+  <!-- Badge/Status -->
+  <g transform="translate(315, 210)">
+    <rect width="170" height="28" rx="14" fill="#f97316" fill-opacity="0.1" stroke="#f97316" stroke-opacity="0.2"/>
+    <!-- dot -->
+    <circle cx="20" cy="14" r="4" fill="#f97316"/>
+    <text x="35" y="18" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace" font-size="11" fill="#fb923c" font-weight="600" letter-spacing="0.5">STATUS: READY // MCP</text>
+  </g>
+</svg>
