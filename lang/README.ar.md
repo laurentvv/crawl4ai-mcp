@@ -1,12 +1,7 @@
 # Web Crawler MCP
 
-[![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
-
-![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-
 <div align="center">
-  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+  <img src="https://raw.githubusercontent.com/laurentvv/crawl4ai-mcp-llm/main/assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
 </div>
 
 أداة قوية للزحف على الويب تتكامل مع مساعدي الذكاء الاصطناعي عبر بروتوكول سياق النموذج (MCP). يتيح هذا المشروع لمساعدي الذكاء الاصطناعي الزحف إلى المواقع الإلكترونية، واستخراج المحتوى الديناميكي، والتنقل عبر الروابط، وحفظ ملفات Markdown المنظمة مباشرة.
@@ -28,7 +23,7 @@
 
 ## 🚀 تهيئة MCP
 
-الطريقة الأبسط والموصى بها لاستخدام هذه الأداة هي عبر `uvx` ، والتي تقوم تلقائيًا بجلب وتشغيل أحدث إصدار من GitHub دون مطالبتك باستنساخ المستودع يدويًا.
+الطريقة الأبسط والموصى بها لاستخدام هذه الأداة هي عبر `uvx`، والتي تقوم تلقائيًا بجلب وتشغيل أحدث إصدار منشور من PyPI.
 
 ### المتطلبات الأساسية
 
@@ -48,9 +43,7 @@
       "args": [
         "--python",
         "3.13",
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
+        "crawl4ai-mcp-llm"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -99,40 +92,10 @@ uv run playwright install chromium
 | `session_id` | string | معرف جلسة مستمر للاحتفاظ بملفات تعريف الارتباط وحالة المتصفح عبر الطلبات | None |
 | `delay_before_return_html` | number | تأخير بالثواني للانتظار قبل استخراج HTML (مفيد لصفحات JS الثقيلة) | None |
 
-## 👨‍💻 التطوير
-
-إذا كنت ترغب في تعديل الزاحف أو تشغيله محليًا:
-
-1. استنساخ هذا المستودع:
-```bash
-git clone https://github.com/laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
-```
-
-2. تثبيت التبعيات باستخدام `uv`:
-```bash
-uv sync
-```
-
-3. اختبار خادم MCP محليًا باستخدام مفتش MCP الرسمي:
-```bash
-npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
-```
-
-4. تشغيل مجموعة الاختبارات الآلية:
-```bash
-uv run pytest tests/
-```
-
-5. تشغيل خادم MCP مباشرة (للاستخدام القياسي):
-```bash
-uv run crawl4ai-mcp
-```
-
-## 🤝 المساهمة
-
-المساهمات مرحب بها! لا تتردد في فتح مشكلة (issue) أو تقديم طلب سحب (pull request).
-
 ## 📄 الترخيص
 
-هذا المشروع مرخص بموجب رخصة MIT - راجع ملف LICENSE للحصول على التفاصيل.
+هذا المشروع مرخص بموجب رخصة MIT.
+
+---
+
+> 🏠 **الكود المصدري والتوثيق**: [github.com/laurentvv/crawl4ai-mcp-llm](https://github.com/laurentvv/crawl4ai-mcp-llm)

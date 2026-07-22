@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 <div align="center">
-  <img src="assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+  <img src="https://raw.githubusercontent.com/laurentvv/crawl4ai-mcp-llm/main/assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
 </div>
 
 A powerful web crawling tool that integrates with AI assistants via the MCP (Model Context Protocol). This project allows AI assistants to crawl websites, extract dynamic content, navigate through links, and save structured Markdown files directly.
@@ -28,7 +28,7 @@ A powerful web crawling tool that integrates with AI assistants via the MCP (Mod
 
 ## 🚀 MCP Configuration
 
-The simplest and recommended way to use this tool is via `uvx`, which automatically fetches and runs the latest version from GitHub without requiring you to clone the repository manually.
+The simplest and recommended way to use this tool is via `uvx`, which automatically fetches and runs the latest published version from PyPI.
 
 ### Prerequisites
 
@@ -39,6 +39,28 @@ The simplest and recommended way to use this tool is via `uvx`, which automatica
 Add the following to your AI Assistant's MCP configuration file (e.g., `cline_mcp_settings.json` or `claude_desktop_config.json`):
 
 > **Note for Windows Users**: It is highly recommended to specify `--python 3.13` to avoid compilation issues with certain dependencies.
+
+**From PyPI (recommended):**
+
+```json
+{
+  "mcpServers": {
+    "crawl": {
+      "command": "uvx",
+      "args": [
+        "--python",
+        "3.13",
+        "crawl4ai-mcp-llm"
+      ],
+      "disabled": false,
+      "autoApprove": [],
+      "timeout": 600
+    }
+  }
+}
+```
+
+**From GitHub (latest unreleased):**
 
 ```json
 {

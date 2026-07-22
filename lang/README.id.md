@@ -1,12 +1,7 @@
 # Web Crawler MCP
 
-[![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
-
-![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-
 <div align="center">
-  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+  <img src="https://raw.githubusercontent.com/laurentvv/crawl4ai-mcp-llm/main/assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
 </div>
 
 Alat perayapan web (web crawling) canggih yang terintegrasi dengan asisten AI melalui MCP (Model Context Protocol). Proyek ini memungkinkan asisten AI untuk merayapi situs web, mengekstrak konten dinamis, menavigasi melalui tautan, dan menyimpan file Markdown terstruktur secara langsung.
@@ -28,7 +23,7 @@ Alat perayapan web (web crawling) canggih yang terintegrasi dengan asisten AI me
 
 ## 🚀 Konfigurasi MCP
 
-Cara termudah dan yang direkomendasikan untuk menggunakan alat ini adalah melalui `uvx`, yang secara otomatis mengambil dan menjalankan versi terbaru dari GitHub tanpa mengharuskan Anda untuk mengkloning repositori secara manual.
+Cara termudah dan yang direkomendasikan untuk menggunakan alat ini adalah melalui `uvx`, yang secara otomatis mengambil dan menjalankan versi terbaru yang dipublikasikan dari PyPI.
 
 ### Prasyarat
 
@@ -48,9 +43,7 @@ Tambahkan berikut ini ke file konfigurasi MCP Asisten AI Anda (misalnya, `cline_
       "args": [
         "--python",
         "3.13",
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
+        "crawl4ai-mcp-llm"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -99,40 +92,10 @@ Alat `crawl` menerima parameter berikut:
 | `session_id` | string | Pengidentifikasi sesi persisten untuk menyimpan cookie dan status browser di seluruh permintaan | None |
 | `delay_before_return_html` | number | Penundaan dalam detik untuk menunggu sebelum mengekstrak HTML (berguna untuk halaman JS yang berat) | None |
 
-## 👨‍💻 Pengembangan
-
-Jika Anda ingin memodifikasi perayap atau menjalankannya secara lokal:
-
-1. Kloning repositori ini:
-```bash
-git clone https://github.com/laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
-```
-
-2. Instal dependensi menggunakan `uv`:
-```bash
-uv sync
-```
-
-3. Uji server MCP secara lokal menggunakan MCP Inspector resmi:
-```bash
-npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
-```
-
-4. Jalankan suite pengujian otomatis:
-```bash
-uv run pytest tests/
-```
-
-5. Jalankan server MCP secara langsung (untuk penggunaan standar):
-```bash
-uv run crawl4ai-mcp
-```
-
-## 🤝 Kontribusi
-
-Kontribusi sangat diterima! Jangan ragu untuk membuka issue atau mengirimkan pull request.
-
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah Lisensi MIT - lihat file LICENSE untuk detailnya.
+Proyek ini dilisensikan di bawah Lisensi MIT.
+
+---
+
+> 🏠 **Kode sumber & dokumentasi**: [github.com/laurentvv/crawl4ai-mcp-llm](https://github.com/laurentvv/crawl4ai-mcp-llm)

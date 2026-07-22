@@ -1,15 +1,10 @@
 # Web Crawler MCP
 
-[![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
-
-![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-
 <div align="center">
-  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+  <img src="https://raw.githubusercontent.com/laurentvv/crawl4ai-mcp-llm/main/assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
 </div>
 
-Una potente herramienta de rastreo web que se integra con asistentes de IA a través del MCP (Model Context Protocol). Este proyecto permite a los asistentes de IA rastrear sitios web, extraer contenido dinámico, navegar a través de enlaces y guardar archivos Markdown estructurados directamente.
+Una potente herramienta de rastreo web que se integra con asistentes de IA a través de MCP (Model Context Protocol). Este proyecto permite a los asistentes de IA rastrear sitios web, extraer contenido dinámico, navegar por los enlaces y guardar archivos Markdown estructurados directamente.
 
 ## 📋 Características
 
@@ -18,27 +13,27 @@ Una potente herramienta de rastreo web que se integra con asistentes de IA a tra
 - Extrae y muestra enlaces internos/externos para la navegación de la IA
 - Rastreo de sitios web con profundidad configurable
 - Estadísticas detalladas de los resultados del rastreo
-- Manejo de errores y páginas no encontradas
-- **Capacidades Avanzadas de Rastreo**:
-  - **Modo Mágico**: Elude anti-bots (como Cloudflare) y simula el comportamiento de un navegador real
-  - **Extracción Dirigida**: Obtén solo lo que necesitas usando selectores CSS
-  - **JavaScript Personalizado**: Ejecuta código antes de la extracción (clics, desplazamientos, llenado de formularios)
-  - **Sesiones Persistentes**: Mantén cookies y estado entre solicitudes para sitios autenticados
-  - **Soporte para SPA**: Espera a selectores CSS dinámicos o establece retrasos explícitos antes de la extracción
+- Gestión de errores y páginas no encontradas
+- **Capacidades avanzadas de extracción**:
+  - **Magic Mode**: Evita los anti-bots (como Cloudflare) y simula el comportamiento real de un navegador
+  - **Extracción dirigida**: Obtén solo lo que necesitas usando selectores CSS
+  - **JavaScript personalizado**: Ejecuta código antes de la extracción (clics, scrolls, rellenado de formularios)
+  - **Sesiones persistentes**: Conserva las cookies y el estado entre solicitudes para sitios autenticados
+  - **Soporte SPA**: Espera selectores CSS dinámicos o establece retardos explícitos antes de la extracción
 
-## 🚀 Configuración de MCP
+## 🚀 Configuración MCP
 
-La forma más sencilla y recomendada de usar esta herramienta es a través de `uvx`, que descarga y ejecuta automáticamente la última versión desde GitHub sin necesidad de clonar el repositorio manualmente.
+La forma más sencilla y recomendada de usar esta herramienta es a través de `uvx`, que obtiene y ejecuta automáticamente la última versión publicada desde PyPI.
 
 ### Requisitos previos
 
-- [uv](https://github.com/astral-sh/uv) instalado en su sistema.
+- [uv](https://github.com/astral-sh/uv) instalado en tu sistema.
 
 ### Configuración para asistentes de IA (por ejemplo, Claude Desktop, Cline)
 
-Agregue lo siguiente al archivo de configuración de MCP de su asistente de IA (por ejemplo, `cline_mcp_settings.json` o `claude_desktop_config.json`):
+Añade lo siguiente al archivo de configuración MCP de tu asistente de IA (por ejemplo, `cline_mcp_settings.json` o `claude_desktop_config.json`):
 
-> **Nota para usuarios de Windows**: Se recomienda encarecidamente especificar `--python 3.13` para evitar problemas de compilación con ciertas dependencias.
+> **Nota para usuarios de Windows**: Es muy recomendable especificar `--python 3.13` para evitar problemas de compilación con ciertas dependencias.
 
 ```json
 {
@@ -48,9 +43,7 @@ Agregue lo siguiente al archivo de configuración de MCP de su asistente de IA (
       "args": [
         "--python",
         "3.13",
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
+        "crawl4ai-mcp-llm"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -62,7 +55,7 @@ Agregue lo siguiente al archivo de configuración de MCP de su asistente de IA (
 
 ### Importante: Instalación del navegador
 
-El rastreador utiliza Playwright para manejar contenido dinámico. Debe instalar los navegadores necesarios después de configurar la herramienta:
+El rastreador utiliza Playwright para gestionar el contenido dinámico. Debes instalar los navegadores necesarios después de configurar la herramienta:
 
 ```bash
 uv run playwright install chromium
@@ -70,69 +63,39 @@ uv run playwright install chromium
 
 ## 🖥️ Uso
 
-Una vez configurado, puede usar el rastreador pidiendo a su asistente de IA que realice un rastreo.
+Una vez configurado, puedes usar el rastreador pidiendo a tu asistente de IA que realice un rastreo.
 
 ### Ejemplos de uso con Claude/Cline
 
 - **Rastreo simple**: "¿Puedes rastrear el sitio example.com y darme un resumen?"
 - **Rastreo con opciones**: "¿Puedes rastrear https://example.com con una profundidad de 3 e incluir enlaces externos?"
 - **Contenido dinámico**: "Rastrea esta aplicación React y espera a que se cargue el selector `.main-content`."
-- **Eludir protecciones**: "Rastrea example.com pero usa el 'modo mágico' para eludir la protección anti-bot."
-- **Extracción dirigida**: "Rastrea el sitio de documentación pero solo extrae el contenido que coincida con el selector CSS `h1, p.lead`."
+- **Evitar protecciones**: "Rastrea example.com pero usa 'magic mode' para evadir la protección anti-bot."
+- **Extracción dirigida**: "Rastrea el sitio de documentación pero extrae solo el contenido que coincida con el selector CSS `h1, p.lead`."
 
-## 🛠️ Parámetros disponibles (Herramienta MCP)
+## 🛠️ Parámetros disponibles (herramienta MCP)
 
 La herramienta `crawl` acepta los siguientes parámetros:
 
 | Parámetro | Tipo | Descripción | Valor predeterminado |
 |-----------|------|-------------|---------------|
-| `url` | string | URL a rastrear (requerido) | - |
+| `url` | string | URL a rastrear (obligatorio) | - |
 | `max_depth` | integer | Profundidad máxima de rastreo | 2 |
 | `include_external` | boolean | Incluir enlaces externos | false |
-| `verbose` | boolean | Habilitar salida detallada | true |
-| `wait_for_selector` | string | Selector CSS a esperar antes de extraer el contenido. Útil para aplicaciones de una sola página (SPA). | None |
+| `verbose` | boolean | Activar la salida detallada | true |
+| `wait_for_selector` | string | Selector CSS a esperar antes de extraer el contenido. Útil para aplicaciones de página única. | None |
 | `return_content` | boolean | Si se debe devolver el contenido extraído directamente en la respuesta MCP (truncado a 50k caracteres si es necesario). | true |
 | `output_file` | string | Ruta del archivo de salida | generado automáticamente |
-| `magic` | boolean | Habilita el modo mágico para eludir anti-bots y simular un navegador real | false |
-| `css_selector` | string | Selector CSS específico para extraer solo elementos dirigidos de la página | None |
+| `magic` | boolean | Activar magic mode para evadir anti-bots y simular un navegador real | false |
+| `css_selector` | string | Selector CSS específico para extraer solo los elementos dirigidos de la página | None |
 | `js_code` | string | Código JavaScript personalizado para ejecutar en la página antes de la extracción | None |
-| `session_id` | string | Identificador de sesión persistente para mantener cookies y estado del navegador entre solicitudes | None |
-| `delay_before_return_html` | number | Retraso en segundos a esperar antes de extraer el HTML (útil para páginas JS pesadas) | None |
-
-## 👨‍💻 Desarrollo
-
-Si desea modificar el rastreador o ejecutarlo localmente:
-
-1. Clone este repositorio:
-```bash
-git clone https://github.com/laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
-```
-
-2. Instale las dependencias usando `uv`:
-```bash
-uv sync
-```
-
-3. Pruebe el servidor MCP localmente usando el MCP Inspector oficial:
-```bash
-npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
-```
-
-4. Ejecute el conjunto de pruebas automatizadas:
-```bash
-uv run pytest tests/
-```
-
-5. Ejecute el servidor MCP directamente (para uso estándar):
-```bash
-uv run crawl4ai-mcp
-```
-
-## 🤝 Contribución
-
-¡Las contribuciones son bienvenidas! No dude en abrir un issue o enviar un pull request.
+| `session_id` | string | Identificador de sesión persistente para conservar cookies y estado del navegador entre solicitudes | None |
+| `delay_before_return_html` | number | Retardo en segundos antes de extraer el HTML (útil para páginas con mucho JS) | None |
 
 ## 📄 Licencia
 
-Este proyecto está licenciado bajo la Licencia MIT - consulte el archivo LICENSE para más detalles.
+Este proyecto está licenciado bajo la Licencia MIT.
+
+---
+
+> 🏠 **Código fuente y documentación**: [github.com/laurentvv/crawl4ai-mcp-llm](https://github.com/laurentvv/crawl4ai-mcp-llm)

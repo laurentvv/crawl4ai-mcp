@@ -1,12 +1,7 @@
 # Web Crawler MCP
 
-[![English](https://img.shields.io/badge/lang-en-blue.svg)](../README.md) [![中文](https://img.shields.io/badge/lang-zh-blue.svg)](README.zh.md) [![हिंदी](https://img.shields.io/badge/lang-hi-blue.svg)](README.hi.md) [![Español](https://img.shields.io/badge/lang-es-blue.svg)](README.es.md) [![Français](https://img.shields.io/badge/lang-fr-blue.svg)](README.fr.md) [![العربية](https://img.shields.io/badge/lang-ar-blue.svg)](README.ar.md) [![বাংলা](https://img.shields.io/badge/lang-bn-blue.svg)](README.bn.md) [![Русский](https://img.shields.io/badge/lang-ru-blue.svg)](README.ru.md) [![Português](https://img.shields.io/badge/lang-pt-blue.svg)](README.pt.md) [![Bahasa Indonesia](https://img.shields.io/badge/lang-id-blue.svg)](README.id.md)
-
-![Python](https://img.shields.io/badge/Python-3.13%2B-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-
 <div align="center">
-  <img src="../assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
+  <img src="https://raw.githubusercontent.com/laurentvv/crawl4ai-mcp-llm/main/assets/banner.jpg" alt="Crawl4AI MCP Banner" width="800"/>
 </div>
 
 Uma poderosa ferramenta de rastreamento web que se integra com assistentes de IA através do MCP (Model Context Protocol). Este projeto permite que assistentes de IA rastreiem sites, extraiam conteúdo dinâmico, naveguem através de links e salvem arquivos Markdown estruturados diretamente.
@@ -28,7 +23,7 @@ Uma poderosa ferramenta de rastreamento web que se integra com assistentes de IA
 
 ## 🚀 Configuração do MCP
 
-A maneira mais simples e recomendada de usar esta ferramenta é via `uvx`, que baixa e executa automaticamente a versão mais recente do GitHub sem a necessidade de clonar o repositório manualmente.
+A maneira mais simples e recomendada de usar esta ferramenta é via `uvx`, que baixa e executa automaticamente a versão mais recente publicada no PyPI.
 
 ### Pré-requisitos
 
@@ -48,9 +43,7 @@ Adicione o seguinte ao arquivo de configuração MCP do seu assistente de IA (ex
       "args": [
         "--python",
         "3.13",
-        "--from",
-        "git+https://github.com/laurentvv/crawl4ai-mcp",
-        "crawl4ai-mcp"
+        "crawl4ai-mcp-llm"
       ],
       "disabled": false,
       "autoApprove": [],
@@ -80,7 +73,7 @@ Uma vez configurado, você pode usar o rastreador pedindo ao seu assistente de I
 - **Contornar Proteções**: "Rastreie example.com mas use o 'modo mágico' para contornar a proteção anti-bot."
 - **Extração Direcionada**: "Rastreie o site de documentação mas extraia apenas o conteúdo correspondente ao seletor CSS `h1, p.lead`."
 
-## 🛠️ Parámetros Disponíveis (Ferramenta MCP)
+## 🛠️ Parâmetros Disponíveis (Ferramenta MCP)
 
 A ferramenta `crawl` aceita os seguintes parâmetros:
 
@@ -99,40 +92,10 @@ A ferramenta `crawl` aceita os seguintes parâmetros:
 | `session_id` | string | Identificador de sessão persistente para manter cookies e estado do navegador entre solicitações | None |
 | `delay_before_return_html` | number | Atraso em segundos para aguardar antes de extrair o HTML (útil para páginas JS pesadas) | None |
 
-## 👨‍💻 Desenvolvimento
-
-Se você deseja modificar o rastreador ou executá-lo localmente:
-
-1. Clone este repositório:
-```bash
-git clone https://github.com/laurentvv/crawl4ai-mcp
-cd crawl4ai-mcp
-```
-
-2. Instale as dependências usando `uv`:
-```bash
-uv sync
-```
-
-3. Teste o servidor MCP localmente usando o MCP Inspector oficial:
-```bash
-npx -y @modelcontextprotocol/inspector uv run crawl4ai-mcp
-```
-
-4. Execute o conjunto de testes automatizados:
-```bash
-uv run pytest tests/
-```
-
-5. Execute o servidor MCP diretamente (para uso padrão):
-```bash
-uv run crawl4ai-mcp
-```
-
-## 🤝 Contribuição
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir uma issue ou enviar um pull request.
-
 ## 📄 Licença
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para detalhes.
+Este projeto está licenciado sob a Licença MIT.
+
+---
+
+> 🏠 **Código-fonte e documentação**: [github.com/laurentvv/crawl4ai-mcp-llm](https://github.com/laurentvv/crawl4ai-mcp-llm)
