@@ -1,0 +1,11 @@
+Using CPython 3.13.9
+Creating virtual environment at: .venv
+   Building crawl4ai-mcp-llm @ file:///D:/temp/crawl4ai-mcp-llm
+      Built crawl4ai-mcp-llm @ file:///D:/temp/crawl4ai-mcp-llm
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 106 packages in 16.85s
+Received exception from stream: 1 validation error for JSONRPCMessage
+  Invalid JSON: EOF while parsing a value at line 2 column 0 [type=json_invalid, input_value='\n', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.13/v/json_invalid

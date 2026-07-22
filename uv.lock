@@ -310,8 +310,8 @@ wheels = [
 ]
 
 [[package]]
-name = "crawl4ai-mcp"
-version = "0.1.0"
+name = "crawl4ai-mcp-llm"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "anyio" },

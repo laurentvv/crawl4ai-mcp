@@ -104,7 +104,19 @@ async def list_tools() -> list[types.Tool]:
     return [
         types.Tool(
             name="crawl",
-            description="Crawls a website and saves its content as structured markdown to a file",
+            description=(
+                "Crawls a website and saves its content as structured markdown to a file.\n\n"
+                "⚠️ PERFORMANCE WARNING: This tool can take from 30 seconds to several minutes "
+                "depending on the site. Heavy/SPA sites (React, Next.js, Mintlify), high "
+                "`max_depth`, and the first crawl of a session (Playwright browser startup) "
+                "are especially slow. The MCP client timeout should be set generously "
+                "(e.g. 600000 ms / 10 min).\n\n"
+                "TIPS to speed up crawls:\n"
+                "- Use `css_selector` to extract only the relevant content (e.g. 'main', 'article').\n"
+                "- Use `wait_for_selector` for single-page applications.\n"
+                "- Lower `max_depth` (1 = single page) when you don't need recursive crawling.\n"
+                "- Warn the user before launching a crawl that it may take a while."
+            ),
             inputSchema={
                 "type": "object",
                 "required": ["url"],
