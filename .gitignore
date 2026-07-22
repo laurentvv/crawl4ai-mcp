@@ -39,4 +39,5 @@ crawl_results/
 Thumbs.db
 
 # OLD
-.old/
+.old/desc_stderr.log
+*.log
